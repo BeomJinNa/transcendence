@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=${DEV_DATABASE_URL}
+      - DJANGO_SECRET_KEY=${DEV_DJANGO_SECRET_KEY}
+      - DJANGO_DEBUG=${DEV_DJANGO_DEBUG}
+      - DJANGO_ALLOWED_HOSTS=${DEV_DJANGO_ALLOWED_HOSTS}
+    depends_on:
+      - backend
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=${DEV_DATABASE_URL}
+      - DJANGO_SECRET_KEY=${DEV_DJANGO_SECRET_KEY}
+      - DJANGO_DEBUG=${DEV_DJANGO_DEBUG}
+      - DJANGO_ALLOWED_HOSTS=${DEV_DJANGO_ALLOWED_HOSTS}
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:12
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:
