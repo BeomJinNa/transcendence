@@ -7,18 +7,11 @@ services:
     ports:
       - "${HTTPS_PORT}:443"
     volumes:
-      - ./frontend/src:/app/src
-      - /app/node_modules
       - ./frontend/certs:/certs:ro
     environment:
-      - NODE_ENV=production
-      - DATABASE_URL=${PROD_DATABASE_URL}
-      - DJANGO_SECRET_KEY=${PROD_DJANGO_SECRET_KEY}
-      - DJANGO_DEBUG=${PROD_DJANGO_DEBUG}
-      - DJANGO_ALLOWED_HOSTS=${PROD_DJANGO_ALLOWED_HOSTS}
+      - DOMAIN_NAME=${DOMAIN_NAME}
       - SSL_CERT_PATH=${CONTAINER_SSL_CERT_PATH}
       - SSL_CERT_KEY_PATH=${CONTAINER_SSL_CERT_KEY_PATH}
-      - DOMAIN_NAME=${DOMAIN_NAME}
     depends_on:
       - backend
   backend:

@@ -1,28 +1,9 @@
 # Dockerfile
 
-# Step 1: Build stage
-FROM node:alpine as build
-
-# Set working directory
-WORKDIR /app
-
-# Copy package.json and package-lock.json
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application code
-COPY . .
-
-# Build the React application
-RUN npm run build
-
-# Step 2: Serve stage
 FROM nginx:alpine
 
-# Copy build files from the build stage
-COPY --from=build /app/build /usr/share/nginx/html
+# Copy your static files (HTML, CSS, JS) to the Nginx server
+COPY ./public /usr/share/nginx/html
 
 # Copy the Nginx configuration template
 COPY nginx/nginx.conf.template /etc/nginx/nginx.conf.template

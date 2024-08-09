@@ -7,8 +7,6 @@ services:
     ports:
       - "${FRONTEND_PORT}:3000"
     volumes:
-      - ./frontend/src:/app/src
-      - /app/node_modules
     environment:
       - NODE_ENV=development
       - DATABASE_URL=${DEV_DATABASE_URL}
