@@ -1,4 +1,3 @@
-# Load environment variables from .env file
 include .env
 
 generate-certs:

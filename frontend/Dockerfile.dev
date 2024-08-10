@@ -1,16 +1,9 @@
-# Dockerfile.dev
-
-# Step 1: Use a Node.js image for the development environment
 FROM node:alpine as development
 
-# Set working directory
 WORKDIR /app
 
-# Copy the rest of the application code
 COPY . .
 
-# Expose port for development server
 EXPOSE 3000
 
-# Command to run the development server
 CMD ["npm", "start"]
