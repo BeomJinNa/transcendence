@@ -1,0 +1,14 @@
+{
+    "login": "Login",
+    "signup": "Signup",
+    "game": "Game",
+    "mainPageTitle": "Main Page",
+    "loginPageTitle": "Login Page",
+    "signupPageTitle": "Signup Page",
+    "gamePageTitle": "Game Page",
+    "loginButton": "Login",
+    "signupButton": "Sign Up",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "youMustBeLoggedIn": "You must be logged in to access this page."
+}

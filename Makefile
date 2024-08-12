@@ -1,7 +1,20 @@
 include .env
 
-generate-certs:
+all:
+	make generate-certs
+	make prod;
+
+certs: frontend/certs
 	openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $(LOCAL_SSL_CERT_KEY_PATH) -out $(LOCAL_SSL_CERT_PATH) -subj "/C=US/ST=State/L=City/O=Organization/CN=$(DOMAIN_NAME)"
+
+frontend/certs:
+	mkdir frontend/certs
+
+re-prod:
+	make clean-prod; make prod
+
+re-dev:
+	make clean-dev; make dev
 
 up-dev:
 	docker-compose -f docker-compose.dev.yml up -d

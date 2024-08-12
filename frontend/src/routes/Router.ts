@@ -1,3 +1,4 @@
+import I18n from "../localization/I18n.js";
 import MainPage from "../pages/MainPage.js";
 import LoginPage from "../pages/LoginPage.js";
 import SignupPage from "../pages/SignupPage.js";
@@ -55,10 +56,10 @@ class Router {
 
 	private restrictedRoute(PageComponent: PageComponentType): RouteHandlerType {
 		return (app: HTMLElement) => {
-			if (StateManager.getState("isLoggedIn")) {
+			if (StateManager.getState("isAuthenticated")) {
 				this.loadAndPushState(this.loadPage(PageComponent), app);
 			} else {
-				alert("You must be logged in to access this page.");
+				alert(I18n.t("youMustBeLoggedIn"));
 				this.loadAndPushState(this.loadPage(MainPage), app);
 			}
 		};

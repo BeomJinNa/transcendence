@@ -1,3 +1,5 @@
+import I18n from "../localization/I18n.js";
+
 export default class MainPage {
 	public render(): HTMLElement {
 		const container = document.createElement("div");
@@ -13,9 +15,9 @@ export default class MainPage {
 		container.appendChild(heading);
 
 		//BODY
-		const loginLink = this.createLink("/login", "Login");
-		const signupLink = this.createLink("/signup", "Signup");
-		const gameLink = this.createLink("/game", "Game");
+		const loginLink = this.createLink("/login", I18n.t("login"));
+		const signupLink = this.createLink("/signup", I18n.t("signup"));
+		const gameLink = this.createLink("/game", I18n.t("game"));
 
 		container.appendChild(loginLink);
 		container.appendChild(signupLink);
