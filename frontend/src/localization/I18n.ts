@@ -1,7 +1,7 @@
 type Translation = { [key: string]: string };
 class I18n {
 	private locale: string;
-	private translations: { [key: string]: { [key: string]: string } } = {};
+	private translations: { [key: string]: Translation } = {};
 
 	constructor(defaultLocale: string) {
 		this.locale = defaultLocale;

@@ -15,7 +15,6 @@ class StateManager {
 	private observers: { [key in keyof State]?: Function[] };
 
 	private constructor() {
-		// 초기 상태 설정
 		this.state = {
 			isAuthenticated: false,
 			token: null,
@@ -59,6 +58,22 @@ class StateManager {
 		if (this.observers[key]) {
 			this.observers[key]!.forEach((callback) => callback(this.state[key]));
 		}
+	}
+
+	public initAuthState() {
+		const token = localStorage.getItem("authToken");
+		if (token) {
+			this.setState("isAuthenticated", true);
+			this.setState("token", token);
+			// 추가로 사용자 정보를 가져와서 state에 설정할 수 있습니다.
+		}
+	}
+
+	public logout() {
+		localStorage.removeItem("authToken");
+		this.setState("isAuthenticated", false);
+		this.setState("token", null);
+		this.setState("user", null);
 	}
 }
 
