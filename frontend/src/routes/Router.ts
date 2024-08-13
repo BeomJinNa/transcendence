@@ -1,9 +1,12 @@
-import I18n from "../localization/I18n.js";
 import MainPage from "../pages/MainPage.js";
 import LoginPage from "../pages/LoginPage.js";
 import SignupPage from "../pages/SignupPage.js";
 import GamePage from "../pages/GamePage.js";
-import StateManager from "../userState/StateManager.js";
+import AuthService from "../auth/AuthService.js";
+import LocalAuthProvider from "../auth/LocalAuthProvider.js";
+import I18n from "../localization/I18n.js";
+
+const authService = new AuthService(new LocalAuthProvider());
 
 type PageComponentType = { new (): any };
 type RouteHandlerType = (app: HTMLElement) => void;
@@ -56,11 +59,11 @@ class Router {
 
 	private restrictedRoute(PageComponent: PageComponentType): RouteHandlerType {
 		return (app: HTMLElement) => {
-			if (StateManager.getState("isAuthenticated")) {
+			if (authService.isAuthenticated()) {
 				this.loadAndPushState(this.loadPage(PageComponent), app);
 			} else {
 				alert(I18n.t("youMustBeLoggedIn"));
-				this.loadAndPushState(this.loadPage(MainPage), app);
+				this.loadAndPushState(this.loadPage(LoginPage), app);
 			}
 		};
 	}

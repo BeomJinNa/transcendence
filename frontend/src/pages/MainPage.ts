@@ -1,4 +1,5 @@
 import I18n from "../localization/I18n.js";
+import StateManager from "../userState/StateManager.js";
 
 export default class MainPage {
 	public render(): HTMLElement {
@@ -11,17 +12,21 @@ export default class MainPage {
 
 		//HEAD
 		const heading = document.createElement("h1");
-		heading.textContent = "Main Page";
+		heading.textContent = I18n.t("mainPageTitle");
 		container.appendChild(heading);
 
 		//BODY
-		const loginLink = this.createLink("/login", I18n.t("login"));
-		const signupLink = this.createLink("/signup", I18n.t("signup"));
-		const gameLink = this.createLink("/game", I18n.t("game"));
+		const isAuthenticated = StateManager.getState("isAuthenticated");
 
-		container.appendChild(loginLink);
-		container.appendChild(signupLink);
-		container.appendChild(gameLink);
+		if (!isAuthenticated) {
+			const loginLink = this.createLink("/login", I18n.t("login"));
+			const signupLink = this.createLink("/signup", I18n.t("signup"));
+			container.appendChild(loginLink);
+			container.appendChild(signupLink);
+		} else {
+			const gameLink = this.createLink("/game", I18n.t("game"));
+			container.appendChild(gameLink);
+		}
 
 		return container;
 	}
@@ -30,7 +35,7 @@ export default class MainPage {
 		const link = document.createElement("a");
 		link.href = href;
 		link.textContent = text;
-		link.style.display = "block"; // 스타일 추가 (필요 시)
+		link.style.display = "block";
 		return link;
 	}
 }
