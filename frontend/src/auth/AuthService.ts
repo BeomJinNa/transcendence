@@ -1,10 +1,18 @@
 import AuthProvider from "./AuthProvider.js";
 
 class AuthService {
+	private static instance: AuthService;
 	private provider: AuthProvider;
 
-	constructor(provider: AuthProvider) {
+	private constructor(provider: AuthProvider) {
 		this.provider = provider;
+	}
+
+	public static getInstance(provider: AuthProvider): AuthService {
+		if (!AuthService.instance) {
+			AuthService.instance = new AuthService(provider);
+		}
+		return AuthService.instance;
 	}
 
 	async login(email: string, password: string): Promise<boolean> {
