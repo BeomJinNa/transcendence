@@ -1,5 +1,6 @@
 import I18n from "../localization/I18n.js";
 import AuthService from "../auth/AuthService.js";
+import LocalAuthProvider from "../auth/LocalAuthProvider.js";
 
 export default class LoginPage {
 	public render(): HTMLElement {
@@ -27,7 +28,7 @@ export default class LoginPage {
 				form.querySelector('input[type="password"]') as HTMLInputElement
 			).value;
 
-			const success = await AuthService.getInstance().login(email, password);
+			const success = await AuthService.getInstance(new LocalAuthProvider()).login(email, password);
 
 			if (success) {
 				alert(I18n.t("loginSuccess"));

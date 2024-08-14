@@ -4,7 +4,7 @@ class AuthService {
 	private static instance: AuthService;
 	private provider: AuthProvider;
 
-	private constructor(provider: AuthProvider) {
+	constructor(provider: AuthProvider) {
 		this.provider = provider;
 	}
 
