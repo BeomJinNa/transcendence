@@ -19,4 +19,4 @@ RUN npm install -g live-server
 COPY tsconfig.json .
 
 # Start the application with nodemon and tsc in watch mode
-CMD ["concurrently", "tsc --watch",  "live-server --https=./live.js --port=443 ./dist"]
+CMD ["concurrently", "tsc --watch",  "live-server --entry-file=public/index.html --port=80 ."]
