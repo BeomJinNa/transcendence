@@ -5,9 +5,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.dev
     ports:
-      - "${HTTPS_PORT}:443"
+      - "80:80"
     volumes:
       - ./frontend/certs:/certs:ro
+      - ./frontend:/app  # 호스트 디렉토리를 컨테이너의 /app 디렉토리에 마운트
+      - /app/node_modules  # node_modules는 호스트와 분리하여 관리
     environment:
       - DOMAIN_NAME=${DOMAIN_NAME}
       - SSL_CERT_PATH=${CONTAINER_SSL_CERT_PATH}

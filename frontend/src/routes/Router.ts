@@ -7,68 +7,97 @@ import LocalAuthProvider from "../auth/LocalAuthProvider.js";
 import I18n from "../localization/I18n.js";
 
 type PageComponentType = { new (): any };
-type RouteHandlerType = (app: HTMLElement) => void;
-type RoutesType = { [key: string]: RouteHandlerType };
+type RouteHandlerType = () => HTMLElement;
+
+type RoutesType = Record<
+	string,
+	{
+		handler: RouteHandlerType;
+		restricted?: boolean;
+	}
+>;
 
 class Router {
 	private routes: RoutesType;
-	private restrictedRoutes: RoutesType;
+	private app: HTMLElement;
+	private pathToRedirect: string = "/login";
+	private authService: AuthService;
 
-	constructor() {
+	constructor(app: HTMLElement, authService: AuthService) {
+		this.app = app;
+		this.authService = authService;
 		this.routes = {
-			"/": this.loadPage(MainPage),
-			"/login": this.loadPage(LoginPage),
-			"/signup": this.loadPage(SignupPage),
-			"/game": this.loadPage(GamePage), // TEST
+			"/": {
+				handler: this.loadPage(MainPage),
+			},
+			"/login": {
+				handler: this.loadPage(LoginPage),
+			},
+			"/signup": {
+				handler: this.loadPage(SignupPage),
+			},
+			"/game": {
+				handler: this.loadPage(GamePage),
+				restricted: true,
+			},
 		};
 
-		this.restrictedRoutes = {
-			//"/game": this.restrictedRoute(GamePage),
-		};
+		history.replaceState(null, "", document.location.href);
+		this.render(window.location.pathname);
+
+		window.addEventListener("popstate", (event) => {
+			console.log("popstate : ", event);
+			this.render(window.location.pathname);
+		});
+		document.addEventListener("click", (event) => {
+			if (event.target instanceof HTMLAnchorElement) {
+				event.preventDefault();
+				const path = new URL(event.target.href).pathname;
+				this.navigateTo(path);
+			}
+		});
 	}
 
-	public init(app: HTMLElement) {
-		window.onpopstate = () => this.handleRoute(app);
-		this.handleRoute(app);
+	private navigateTo(path: string) {
+		history.pushState(null, "", path);
+		this.render(path);
 	}
 
-	private handleRoute(app: HTMLElement) {
-		const path = window.location.pathname;
-		console.log("Current path:", path); // 현재 경로를 로그로 출력
-
-		if (this.restrictedRoutes[path]) {
-			console.log("Restricted route detected:", path);
-			this.restrictedRoutes[path](app);
+	private render(path: string) {
+		const route = this.routes[path] || this.routes["/"];
+		let component: HTMLElement;
+		if (route.restricted) {
+			if (!this.authService.isAuthenticated()) {
+				alert(I18n.t("youMustBeLoggedIn"));
+				component = route.handler();
+			} else {
+				this.navigateTo(this.pathToRedirect);
+				return;
+			}
 		} else {
-			const route = this.routes[path] || this.loadPage(MainPage);
-			console.log("Loading route for path:", path);
-			this.loadAndPushState(route, app);
+			component = route.handler();
 		}
-	}
-
-	private loadAndPushState(route: RouteHandlerType, app: HTMLElement) {
-		route(app);
-//		window.history.pushState({}, "", window.location.pathname);
+		this.app.innerHTML = "";
+		this.app.appendChild(component);
 	}
 
 	private loadPage(PageComponent: PageComponentType): RouteHandlerType {
-		return (app: HTMLElement) => {
+		return () => {
 			const page = new PageComponent();
-			app.innerHTML = "";
-			app.appendChild(page.render());
+			return page.render();
 		};
 	}
 
-	private restrictedRoute(PageComponent: PageComponentType): RouteHandlerType {
-		return (app: HTMLElement) => {
-			if (AuthService.isAuthenticated()) {
-				this.loadAndPushState(this.loadPage(PageComponent), app);
-			} else {
-				alert(I18n.t("youMustBeLoggedIn"));
-				this.loadAndPushState(this.loadPage(LoginPage), app);
-			}
-		};
-	}
+	// private loadRestrictedPage(PageComponent: PageComponentType): RouteHandlerType {
+	//   return () => {
+	//     if (authService.isAuthenticated()) {
+	//       return this.loadPage(PageComponent);
+	//     } else {
+	//       alert(I18n.t("youMustBeLoggedIn"));
+	//       return this.loadPage(LoginPage);
+	//     }
+	//   };
+	// }
 }
 
-export default new Router();
+export default Router;

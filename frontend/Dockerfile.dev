@@ -1,9 +1,22 @@
-FROM node:alpine as development
+# Use a Node.js base image
+FROM node:14-alpine
 
+# Set the working directory inside the container
 WORKDIR /app
 
-COPY . .
+# Install TypeScript globally
+RUN npm install -g typescript
 
-EXPOSE 3000
+RUN npm install -g concurrently
+RUN npm install -g live-server
 
-CMD ["npm", "start"]
+# Install application dependencies (if needed)
+# You might not have a package.json, so this can be skipped or adjusted
+# COPY package.json package-lock.json ./
+# RUN npm install
+
+# Copy the TypeScript configuration file
+COPY tsconfig.json .
+
+# Start the application with nodemon and tsc in watch mode
+CMD ["concurrently", "tsc --watch",  "live-server --entry-file=public/index.html --port=80 ."]

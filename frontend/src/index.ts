@@ -15,6 +15,6 @@ async function init() {
 		if (AuthService.isAuthenticated()) {
 			// 사용자가 인증된 상태라면, 추가 로직을 실행할 수 있습니다.
 		}
-		Router.init(app); // Router 초기화 및 애플리케이션 시작
+		new Router(app, AuthService);
 	}
 }
