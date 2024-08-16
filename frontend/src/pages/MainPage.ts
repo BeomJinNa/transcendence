@@ -1,5 +1,7 @@
 import I18n from "../localization/I18n.js";
 import StateManager from "../userState/StateManager.js";
+import { createLink, createButton, createSelect } from "./formUtils.js";
+import AuthService from "../auth/AuthService.js";
 
 export default class MainPage {
 	public render(): HTMLElement {
@@ -10,32 +12,56 @@ export default class MainPage {
 		link.href = "/css/MainPage.css";
 		document.head.appendChild(link);
 
-		//HEAD
+		// HEAD
 		const heading = document.createElement("h1");
 		heading.textContent = I18n.t("mainPageTitle");
 		container.appendChild(heading);
 
-		//BODY
+		// BODY
+		container.appendChild(this.createLanguageSelector());
+
 		const isAuthenticated = StateManager.getState("isAuthenticated");
 
 		if (!isAuthenticated) {
-			const loginLink = this.createLink("/login", I18n.t("login"));
-			const signupLink = this.createLink("/signup", I18n.t("signup"));
-			container.appendChild(loginLink);
-			container.appendChild(signupLink);
+			container.appendChild(createLink("/login", I18n.t("login")));
+			container.appendChild(createLink("/signup", I18n.t("signup")));
+			container.appendChild(createLink("/game", I18n.t("game"))); //TEST
 		} else {
-			const gameLink = this.createLink("/game", I18n.t("game"));
-			container.appendChild(gameLink);
+			container.appendChild(createLink("/game", I18n.t("game")));
+			container.appendChild(this.createLogoutButton());
 		}
 
 		return container;
 	}
 
-	private createLink(href: string, text: string): HTMLElement {
-		const link = document.createElement("a");
-		link.href = href;
-		link.textContent = text;
-		link.style.display = "block";
-		return link;
+	private createLogoutButton(): HTMLElement {
+		return createButton(I18n.t("logoutButton"), () => {
+			AuthService.logout(); // 로그아웃 처리
+			window.location.href = "/login"; // 로그아웃 후 로그인 페이지로 리디렉션
+		});
+	}
+
+	private createLanguageSelector(): HTMLElement {
+		const languages: { [key: string]: string } = {
+			en: "English",
+			ko: "한국어",
+			// 추가 언어를 여기에 추가할 수 있습니다.
+		};
+
+		const select = createSelect(
+			Object.keys(languages).map((lang) => ({
+				value: lang,
+				text: languages[lang],
+			}))
+		);
+
+		select.value = I18n.getLocale();
+		select.addEventListener("change", (event) => {
+			const selectedLanguage = (event.target as HTMLSelectElement).value;
+			I18n.setLocale(selectedLanguage);
+			window.location.reload(); // 언어 변경 후 페이지를 새로고침하여 언어를 반영
+		});
+
+		return select;
 	}
 }

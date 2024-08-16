@@ -1,0 +1,41 @@
+import I18n from "../../localization/I18n.js";
+import { createLabel, createSelect, createButton } from "../formUtils.js";
+
+export default class GameSettings {
+	public render(): HTMLElement {
+		const container = document.createElement("div");
+		const heading = document.createElement("h2");
+		heading.textContent = I18n.t("selectGameMode");
+
+		const form = document.createElement("form");
+
+		// Select player count
+		form.appendChild(createLabel(I18n.t("numberOfPlayers")));
+
+		const playerCountSelect = createSelect([
+			{ value: "2", text: "2 Players" },
+			{ value: "3", text: "3 Players" },
+			{ value: "4", text: "4 Players" },
+		]);
+
+		form.appendChild(playerCountSelect);
+
+		form.appendChild(
+			createButton(I18n.t("startGame"), () => {
+				const playerCount = parseInt(playerCountSelect.value, 10);
+				this.startGame(playerCount);
+			})
+		);
+
+		container.appendChild(heading);
+		container.appendChild(form);
+
+		return container;
+	}
+
+	private startGame(playerCount: number): void {
+		// Store the player count in the session or pass it to the GamePage
+		sessionStorage.setItem("playerCount", playerCount.toString());
+		window.location.href = "/game";
+	}
+}
