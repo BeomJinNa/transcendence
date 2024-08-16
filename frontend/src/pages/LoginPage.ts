@@ -1,6 +1,6 @@
 import I18n from "../localization/I18n.js";
 import AuthService from "../auth/AuthService.js";
-import LocalAuthProvider from "../auth/LocalAuthProvider.js";
+import { createLabel, createInput, createButton } from "./formUtils.js";
 
 export default class LoginPage {
 	public render(): HTMLElement {
@@ -18,9 +18,17 @@ export default class LoginPage {
 		const form = this.createLoginForm();
 		container.appendChild(form);
 
-		// Add event listener for form submission
-		form.addEventListener("submit", async (event) => {
-			event.preventDefault(); // Prevent default form submission
+		return container;
+	}
+
+	private createLoginForm(): HTMLElement {
+		const form = document.createElement("form");
+
+		const emailLabel = createLabel(I18n.t("emailLabel"));
+		const emailInput = createInput("email");
+		const passwordLabel = createLabel(I18n.t("passwordLabel"));
+		const passwordInput = createInput("password");
+		const submitButton = createButton(I18n.t("loginButton"), async () => {
 			const email = (
 				form.querySelector('input[type="email"]') as HTMLInputElement
 			).value;
@@ -28,28 +36,15 @@ export default class LoginPage {
 				form.querySelector('input[type="password"]') as HTMLInputElement
 			).value;
 
-			const success = await AuthService.getInstance(new LocalAuthProvider()).login(email, password);
+			const success = await AuthService.login(email, password);
 
 			if (success) {
 				alert(I18n.t("loginSuccess"));
-				// Redirect to the main page or any other page
-				window.location.href = "/"; // 예시로 메인 페이지로 리디렉션
+				window.location.href = "/";
 			} else {
 				alert(I18n.t("loginFailed"));
 			}
 		});
-
-		return container;
-	}
-
-	private createLoginForm(): HTMLElement {
-		const form = document.createElement("form");
-
-		const emailLabel = this.createLabel(I18n.t("emailLabel"));
-		const emailInput = this.createInput("email");
-		const passwordLabel = this.createLabel(I18n.t("passwordLabel"));
-		const passwordInput = this.createInput("password");
-		const submitButton = this.createButton(I18n.t("loginButton"));
 
 		form.appendChild(emailLabel);
 		form.appendChild(emailInput);
@@ -58,24 +53,5 @@ export default class LoginPage {
 		form.appendChild(submitButton);
 
 		return form;
-	}
-
-	private createLabel(text: string): HTMLElement {
-		const label = document.createElement("label");
-		label.textContent = text;
-		return label;
-	}
-
-	private createInput(type: string): HTMLInputElement {
-		const input = document.createElement("input");
-		input.type = type;
-		return input;
-	}
-
-	private createButton(text: string): HTMLButtonElement {
-		const button = document.createElement("button");
-		button.type = "submit";
-		button.textContent = text;
-		return button;
 	}
 }

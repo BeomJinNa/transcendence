@@ -1,60 +1,64 @@
 import I18n from "../localization/I18n.js";
+import AuthService from "../auth/AuthService.js";
+import { createLabel, createInput, createButton } from "./formUtils.js";
 
 export default class SignupPage {
-    public render(): HTMLElement {
-        const container = document.createElement("div");
+	public render(): HTMLElement {
+		const container = document.createElement("div");
 
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = "/css/SignupPage.css";
-        document.head.appendChild(link);
+		const link = document.createElement("link");
+		link.rel = "stylesheet";
+		link.href = "/css/SignupPage.css";
+		document.head.appendChild(link);
 
-				//HEAD
-        const heading = document.createElement("h1");
-        heading.textContent = I18n.t("signupPageTitle");
-        container.appendChild(heading);
+		const heading = document.createElement("h1");
+		heading.textContent = I18n.t("signupPageTitle");
+		container.appendChild(heading);
 
-				//BODY
-        const form = this.createSignupForm();
-        container.appendChild(form);
+		const form = this.createSignupForm();
+		container.appendChild(form);
 
-        return container;
-    }
+		return container;
+	}
 
-    private createSignupForm(): HTMLElement {
-        const form = document.createElement("form");
+	private createSignupForm(): HTMLElement {
+		const form = document.createElement("form");
 
-        const emailLabel = this.createLabel(I18n.t("emailLabel"));
-        const emailInput = this.createInput("email");
-        const passwordLabel = this.createLabel(I18n.t("passwordLabel"));
-        const passwordInput = this.createInput("password");
-        const submitButton = this.createButton(I18n.t("signupButton"));
+		const emailLabel = createLabel(I18n.t("emailLabel"));
+		const emailInput = createInput("email");
+		const passwordLabel = createLabel(I18n.t("passwordLabel"));
+		const passwordInput = createInput("password");
+		const nicknameLabel = createLabel(I18n.t("nicknameLabel"));
+		const nicknameInput = createInput("text");
+		const submitButton = createButton(I18n.t("signupButton"), async () => {
+			const email = (
+				form.querySelector('input[type="email"]') as HTMLInputElement
+			).value;
+			const password = (
+				form.querySelector('input[type="password"]') as HTMLInputElement
+			).value;
+			const nickname = (
+				form.querySelector('input[type="text"]') as HTMLInputElement
+			).value;
 
-        form.appendChild(emailLabel);
-        form.appendChild(emailInput);
-        form.appendChild(passwordLabel);
-        form.appendChild(passwordInput);
-        form.appendChild(submitButton);
+			const success = await AuthService.signup(email, password, nickname);
 
-        return form;
-    }
+			if (success) {
+				alert(I18n.t("signupSuccess"));
+				window.location.href = "/login";
+			} else {
+				alert(I18n.t("signupFailed"));
+			}
+		});
 
-    private createLabel(text: string): HTMLElement {
-        const label = document.createElement("label");
-        label.textContent = text;
-        return label;
-    }
+		form.appendChild(emailLabel);
+		form.appendChild(emailInput);
+		form.appendChild(passwordLabel);
+		form.appendChild(passwordInput);
+		form.appendChild(nicknameLabel);
+		form.appendChild(nicknameInput);
+		form.appendChild(submitButton);
 
-    private createInput(type: string): HTMLInputElement {
-        const input = document.createElement("input");
-        input.type = type;
-        return input;
-    }
-
-    private createButton(text: string): HTMLButtonElement {
-        const button = document.createElement("button");
-        button.type = "submit";
-        button.textContent = text;
-        return button;
-    }
+		return form;
+	}
 }

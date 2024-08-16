@@ -15,6 +15,11 @@ class LocalAuthProvider implements AuthProvider {
 			StateManager.setState("token", token);
 			StateManager.setState("user", user);
 
+			console.log(
+				"Login successful, state updated:",
+				StateManager.getState("isAuthenticated")
+			);
+
 			return true;
 		} catch (error) {
 			console.error("Login error:", error);
@@ -24,6 +29,7 @@ class LocalAuthProvider implements AuthProvider {
 
 	// 로그아웃 처리
 	logout(): void {
+		console.log("Logging out");
 		localStorage.removeItem("authToken");
 		StateManager.setState("isAuthenticated", false);
 		StateManager.setState("token", null);
@@ -32,17 +38,29 @@ class LocalAuthProvider implements AuthProvider {
 
 	// 인증 상태를 반환
 	isAuthenticated(): boolean {
+		console.log("Checking authentication state");
 		return StateManager.getState("isAuthenticated");
 	}
 
 	// 토큰을 반환
 	getToken(): string | null {
+		console.log("Getting token");
 		return StateManager.getState("token");
 	}
 
 	// 사용자 정보를 반환
 	getUser(): { email: string; nickname: string } | null {
+		console.log("Getting user info");
 		return StateManager.getState("user");
+	}
+
+	async signup(
+		email: string,
+		password: string,
+		nickname: string
+	): Promise<boolean> {
+		console.log(`Signing up with ${email}, ${nickname}`);
+		return true;
 	}
 }
 

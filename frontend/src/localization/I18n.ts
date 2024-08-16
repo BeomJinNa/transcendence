@@ -20,6 +20,10 @@ class I18n {
 		this.locale = locale;
 		this.loadTranslations();
 	}
+
+	public getLocale(): string {
+		return this.locale;
+	}
 }
 
 export default new I18n("en"); // 기본 언어는 영어로 설정
