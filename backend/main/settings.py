@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     # rest 관련
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     # Apps
     'login',
 ]
