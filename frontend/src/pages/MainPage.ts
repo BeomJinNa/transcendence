@@ -1,7 +1,7 @@
-import I18n from "../localization/I18n.js";
-import StateManager from "../userState/StateManager.js";
-import { createLink, createButton, createSelect } from "./formUtils.js";
-import AuthService from "../auth/AuthService.js";
+import I18n from "../localization/I18n";
+import StateManager from "../userState/StateManager";
+import { createLink, createButton, createSelect } from "./formUtils";
+import AuthService from "../auth/AuthService";
 
 export default class MainPage {
 	public render(): HTMLElement {

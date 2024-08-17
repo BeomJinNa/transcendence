@@ -1,6 +1,6 @@
-import Router from "./routes/Router.js";
-import I18n from "./localization/I18n.js";
-import AuthService from "./auth/AuthService.js";
+import Router from "./routes/Router";
+import I18n from "./localization/I18n";
+import AuthService from "./auth/AuthService";
 
 document.addEventListener("DOMContentLoaded", () => {
 	init();

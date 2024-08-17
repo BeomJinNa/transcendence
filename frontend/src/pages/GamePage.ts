@@ -1,7 +1,7 @@
-import GameSettings from "./GamePage/GameSettings.js";
-import GameModule from "./GamePage/GameModule.js";
-import I18n from "../localization/I18n.js";
-import { createButton } from "./formUtils.js";
+import GameSettings from "./GamePage/GameSettings";
+import GameModule from "./GamePage/GameModule";
+import I18n from "../localization/I18n";
+import { createButton } from "./formUtils";
 
 export default class GamePage {
 	private gameModules: GameModule[] = [];

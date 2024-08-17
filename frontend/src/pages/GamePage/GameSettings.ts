@@ -1,5 +1,5 @@
-import I18n from "../../localization/I18n.js";
-import { createLabel, createSelect, createButton } from "../formUtils.js";
+import I18n from "../../localization/I18n";
+import { createLabel, createSelect, createButton } from "../formUtils";
 
 export default class GameSettings {
 	public render(): HTMLElement {

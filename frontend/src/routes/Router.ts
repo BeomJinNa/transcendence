@@ -1,10 +1,10 @@
-import MainPage from "../pages/MainPage.js";
-import LoginPage from "../pages/LoginPage.js";
-import SignupPage from "../pages/SignupPage.js";
-import GamePage from "../pages/GamePage.js";
-import AuthService from "../auth/AuthService.js";
-import LocalAuthProvider from "../auth/LocalAuthProvider.js";
-import I18n from "../localization/I18n.js";
+import MainPage from "../pages/MainPage";
+import LoginPage from "../pages/LoginPage";
+import SignupPage from "../pages/SignupPage";
+import GamePage from "../pages/GamePage";
+import AuthService from "../auth/AuthService";
+import LocalAuthProvider from "../auth/LocalAuthProvider";
+import I18n from "../localization/I18n";
 
 type PageComponentType = { new (): any };
 type RouteHandlerType = () => HTMLElement;

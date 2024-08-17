@@ -1,6 +1,6 @@
-import I18n from "../localization/I18n.js";
-import AuthService from "../auth/AuthService.js";
-import { createLabel, createInput, createButton } from "./formUtils.js";
+import I18n from "../localization/I18n";
+import AuthService from "../auth/AuthService";
+import { createLabel, createInput, createButton } from "./formUtils";
 
 export default class LoginPage {
 	public render(): HTMLElement {

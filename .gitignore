@@ -2,3 +2,4 @@
 *.pem
 backend/myenv
 node_modules
+dist

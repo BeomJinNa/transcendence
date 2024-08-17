@@ -1,5 +1,5 @@
-import AuthProvider from "./AuthProvider.js";
-import StateManager from "../userState/StateManager.js";
+import AuthProvider from "./AuthProvider";
+import StateManager from "../userState/StateManager";
 
 class LocalAuthProvider implements AuthProvider {
 	// 로컬 환경에서의 간단한 로그인 처리

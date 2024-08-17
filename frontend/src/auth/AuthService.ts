@@ -1,5 +1,5 @@
-import AuthProvider from "./AuthProvider.js";
-import LocalAuthProvider from "./LocalAuthProvider.js";
+import AuthProvider from "./AuthProvider";
+import LocalAuthProvider from "./LocalAuthProvider";
 
 export default class AuthService {
 	private static instance: AuthService | null = null;

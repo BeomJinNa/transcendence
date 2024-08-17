@@ -1,15 +1,17 @@
 FROM node:16 AS build
 
-RUN npm install typescript -g
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm install
 
 COPY . .
-
-RUN tsc
+RUN npm run build
 
 FROM nginx:alpine
 
 COPY ./public /usr/share/nginx/html
-COPY --from=build ./dist /usr/share/nginx/html/dist
+COPY --from=build /app/dist /usr/share/nginx/html/dist
 COPY ./locales /usr/share/nginx/html/locales
 
 COPY nginx/nginx.conf.template /etc/nginx/nginx.conf.template
