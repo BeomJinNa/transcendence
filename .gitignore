@@ -3,4 +3,4 @@
 */myenv
 */__pycache__
 node_modules
-*.env
+/backend/.env
