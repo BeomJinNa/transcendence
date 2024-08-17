@@ -12,9 +12,9 @@ async function init() {
 	const app = document.getElementById("app");
 
 	if (app) {
-		if (AuthService.isAuthenticated()) {
+		if (AuthService.getInstance().isAuthenticated()) {
 			// 사용자가 인증된 상태라면, 추가 로직을 실행할 수 있습니다.
 		}
-		new Router(app, AuthService);
+		new Router(app, AuthService.getInstance());
 	}
 }

@@ -36,7 +36,7 @@ export default class LoginPage {
 				form.querySelector('input[type="password"]') as HTMLInputElement
 			).value;
 
-			const success = await AuthService.login(email, password);
+			const success = await AuthService.getInstance().login(email, password);
 
 			if (success) {
 				alert(I18n.t("loginSuccess"));

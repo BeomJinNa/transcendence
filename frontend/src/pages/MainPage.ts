@@ -36,7 +36,7 @@ export default class MainPage {
 
 	private createLogoutButton(): HTMLElement {
 		return createButton(I18n.t("logoutButton"), () => {
-			AuthService.logout(); // 로그아웃 처리
+			AuthService.getInstance().logout(); // 로그아웃 처리
 			window.location.href = "/login"; // 로그아웃 후 로그인 페이지로 리디렉션
 		});
 	}

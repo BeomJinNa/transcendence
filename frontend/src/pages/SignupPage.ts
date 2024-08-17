@@ -41,7 +41,7 @@ export default class SignupPage {
 				form.querySelector('input[type="text"]') as HTMLInputElement
 			).value;
 
-			const success = await AuthService.signup(email, password, nickname);
+			const success = await AuthService.getInstance().signup(email, password, nickname);
 
 			if (success) {
 				alert(I18n.t("signupSuccess"));
