@@ -1,6 +1,7 @@
 import I18n from "../localization/I18n.js";
 import AuthService from "../auth/AuthService.js";
 import { createLabel, createInput, createButton } from "./formUtils.js";
+import Router from "../routes/Router.js";
 
 export default class LoginPage {
 	public render(): HTMLElement {
@@ -22,7 +23,7 @@ export default class LoginPage {
 	}
 
 	private createLoginForm(): HTMLElement {
-		const form = document.createElement("form");
+		const form = document.createElement("div");
 
 		const emailLabel = createLabel(I18n.t("emailLabel"));
 		const emailInput = createInput("email");
@@ -40,7 +41,7 @@ export default class LoginPage {
 
 			if (success) {
 				alert(I18n.t("loginSuccess"));
-				window.location.href = "/";
+				Router.getInstance().navigateTo("/");
 			} else {
 				alert(I18n.t("loginFailed"));
 			}

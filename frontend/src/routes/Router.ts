@@ -3,7 +3,6 @@ import LoginPage from "../pages/LoginPage.js";
 import SignupPage from "../pages/SignupPage.js";
 import GamePage from "../pages/GamePage.js";
 import AuthService from "../auth/AuthService.js";
-import LocalAuthProvider from "../auth/LocalAuthProvider.js";
 import I18n from "../localization/I18n.js";
 
 type PageComponentType = { new (): any };
@@ -22,10 +21,15 @@ class Router {
 	private app: HTMLElement;
 	private pathToRedirect: string = "/login";
 	private authService: AuthService;
+  private static instance: Router | null = null;
 
-	constructor(app: HTMLElement, authService: AuthService) {
+	constructor() {
+    const app = document.getElementById("app");
+    if (!app) {
+      throw new Error("Element with id 'app' not found");
+    }
 		this.app = app;
-		this.authService = authService;
+		this.authService = AuthService.getInstance();
 		this.routes = {
 			"/": {
 				handler: this.loadPage(MainPage),
@@ -46,7 +50,6 @@ class Router {
 		this.render(window.location.pathname);
 
 		window.addEventListener("popstate", (event) => {
-			console.log("popstate : ", event);
 			this.render(window.location.pathname);
 		});
 		document.addEventListener("click", (event) => {
@@ -58,7 +61,14 @@ class Router {
 		});
 	}
 
-	private navigateTo(path: string) {
+  public static getInstance(): Router {
+    if (!Router.instance) {
+      Router.instance = new Router();
+    }
+    return Router.instance;
+  }
+
+	public navigateTo(path: string) {
 		history.pushState(null, "", path);
 		this.render(path);
 	}
@@ -69,10 +79,10 @@ class Router {
 		if (route.restricted) {
 			if (!this.authService.isAuthenticated()) {
 				alert(I18n.t("youMustBeLoggedIn"));
-				component = route.handler();
-			} else {
 				this.navigateTo(this.pathToRedirect);
 				return;
+			} else {
+				component = route.handler();
 			}
 		} else {
 			component = route.handler();
@@ -87,17 +97,6 @@ class Router {
 			return page.render();
 		};
 	}
-
-	// private loadRestrictedPage(PageComponent: PageComponentType): RouteHandlerType {
-	//   return () => {
-	//     if (authService.isAuthenticated()) {
-	//       return this.loadPage(PageComponent);
-	//     } else {
-	//       alert(I18n.t("youMustBeLoggedIn"));
-	//       return this.loadPage(LoginPage);
-	//     }
-	//   };
-	// }
 }
 
 export default Router;

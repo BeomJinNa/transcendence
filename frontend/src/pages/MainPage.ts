@@ -25,7 +25,7 @@ export default class MainPage {
 		if (!isAuthenticated) {
 			container.appendChild(createLink("/login", I18n.t("login")));
 			container.appendChild(createLink("/signup", I18n.t("signup")));
-			container.appendChild(createLink("/game", I18n.t("game"))); //TEST
+			// container.appendChild(createLink("/game", I18n.t("game"))); //TEST
 		} else {
 			container.appendChild(createLink("/game", I18n.t("game")));
 			container.appendChild(this.createLogoutButton());
