@@ -10,13 +10,15 @@ RUN npm install -g typescript
 RUN npm install -g concurrently
 RUN npm install -g live-server
 
+RUN npm i
+
 # Install application dependencies (if needed)
 # You might not have a package.json, so this can be skipped or adjusted
 # COPY package.json package-lock.json ./
 # RUN npm install
 
 # Copy the TypeScript configuration file
-COPY tsconfig.json .
+# COPY tsconfig.json .
 
 # Start the application with nodemon and tsc in watch mode
 CMD ["concurrently", "tsc --watch",  "live-server --entry-file=public/index.html --port=80 ."]
