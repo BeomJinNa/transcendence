@@ -1,7 +1,9 @@
 include .env
 
 all:
-	make generate-certs
+# make 하면 dist 폴더 만드는 과정 추가해야함. << 파일 없어서 도커 빌드 실패함
+	# make generate-certs
+	make certs;
 	make prod;
 
 certs: frontend/certs
