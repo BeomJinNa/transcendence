@@ -1,6 +1,7 @@
 import I18n from "../localization/I18n";
 import AuthService from "../auth/AuthService";
 import { createLabel, createInput, createButton } from "./formUtils";
+import Router from "../routes/Router";
 
 export default class LoginPage {
 	public render(): HTMLElement {

@@ -2,6 +2,7 @@ import GameSettings from "./GamePage/GameSettings";
 import GameModule from "./GamePage/GameModule";
 import I18n from "../localization/I18n";
 import { createButton } from "./formUtils";
+import Router from "../routes/Router";
 
 export default class GamePage {
 	private gameModules: GameModule[] = [];
@@ -64,7 +65,7 @@ export default class GamePage {
 	private createBackButton(): HTMLElement {
 		return createButton(I18n.t("backToMainButton"), () => {
 			this.endGame(); // 게임 중단 로직
-			window.location.href = "/"; // 메인 페이지로 리디렉션
+			Router.getInstance().navigateTo("/"); // 메인 페이지로 리디렉션
 		});
 	}
 

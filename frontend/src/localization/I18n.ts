@@ -16,9 +16,11 @@ class I18n {
 		return this.translations[this.locale][key] || key;
 	}
 
-	public setLocale(locale: string) {
-		this.locale = locale;
-		this.loadTranslations();
+	public async setLocale(locale: string): Promise<void> {
+		if (this.locale !== locale) {
+			this.locale = locale;
+			await this.loadTranslations();
+		}
 	}
 
 	public getLocale(): string {
