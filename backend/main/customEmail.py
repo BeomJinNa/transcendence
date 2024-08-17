@@ -4,7 +4,7 @@ import ssl
 
 def send_custom_email(subject, body, from_email, to_emails, smtp_server='smtp.gmail.com', smtp_port=587, smtp_user=None, smtp_password=None):
     # 이메일 메시지 생성
-    msg = MIMEText(body)
+    msg = MIMEText(body, 'html')  # 'html'로 설정하여 HTML 형식의 본문을 사용할 수 있음
     msg['Subject'] = subject
     msg['From'] = from_email
     msg['To'] = ', '.join(to_emails)
