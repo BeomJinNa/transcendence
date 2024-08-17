@@ -4,16 +4,13 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from django.contrib.auth import authenticate, get_user_model
-from django.core.mail import send_mail
-from django.utils.crypto import get_random_string
-from django.utils import timezone
-from .models import TwoFactorCode
 from .serializers import UserSerializer
 from main.customEmail import send_custom_email
+import os
 
 User = get_user_model()
-EMAIL_HOST_USER = 'dlsfuf0316@gmail.com'
-EMAIL_HOST_PASSWORD = 'kukj wxpb bizi bgbx'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # JWT 로그인 + 2FA 코드 발송
 class LoginView(APIView):
@@ -22,16 +19,16 @@ class LoginView(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
+        baseurl = request.data.get('baseurl')
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            code = get_random_string(length=6, allowed_chars='0123456789')  # 코드
-            limited_time = timezone.now() + timezone.timedelta(minutes=5)  # 제한시간
-            TwoFactorCode.objects.create(user=user, code=code, expiration=limited_time)
+            tempToken = str(RefreshToken.for_user(user))
+            link = f"{baseurl}/token?t={tempToken}"
 
             send_custom_email(
-                'Your 2FA code',
-                f'Your 2FA code is: {code}',
+                '인증링크',
+                f'<a href={link}>주소를</a> 클릭해주세요',
                 'from server',
                 [user.email],
                 smtp_user=EMAIL_HOST_USER,          # SMTP 사용자 이메일
@@ -45,23 +42,23 @@ class Verify2FAcode(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        username = request.data.get('username')
-        code = request.data.get('code')
-        user = User.objects.get(username=username)
+        token = request.data.get('token')  # 받은 토큰
 
         try:
-            valid_code = TwoFactorCode.objects.get(user=user, code=code)
-            if valid_code.is_valid():
-                refresh = RefreshToken.for_user(user)
-                valid_code.delete()  # 사용된 코드 삭제
-                return Response({
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token)
-                }, status=status.HTTP_200_OK)
-            else:
-                return Response({'detail': "코드가 유효하지 않거나 만료되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
-        except TwoFactorCode.DoesNotExist:
-            return Response({'detail': "코드가 잘못되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
+            # 토큰 확인
+            refresh = RefreshToken(token)  # 토큰이 유효한지 확인
+            user = User.objects.get(id=refresh.payload['user_id'])  # 사용자 확인
+
+            # 성공적으로 인증된 경우
+            new_refresh = RefreshToken.for_user(user)
+            return Response({
+                'refresh': str(new_refresh),
+                'access': str(new_refresh.access_token)
+            }, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            return Response({'detail': "유효하지 않은 토큰입니다."}, status=status.HTTP_400_BAD_REQUEST)
 
 # 로그아웃
 class LogoutView(APIView):
@@ -83,6 +80,7 @@ class LogoutView(APIView):
             print(f"Error: {str(e)}")
             return Response({'detail': "로그아웃 실패"}, status=status.HTTP_400_BAD_REQUEST)
 
+# 회원가입
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 

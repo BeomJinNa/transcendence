@@ -1,4 +1,6 @@
 *.js
 *.pem
-backend/myenv
+*/myenv
+*/__pycache__
 node_modules
+/backend/.env
