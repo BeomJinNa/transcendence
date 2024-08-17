@@ -1,9 +1,10 @@
-import MainPage from "../pages/MainPage.js";
-import LoginPage from "../pages/LoginPage.js";
-import SignupPage from "../pages/SignupPage.js";
-import GamePage from "../pages/GamePage.js";
-import AuthService from "../auth/AuthService.js";
-import I18n from "../localization/I18n.js";
+import MainPage from "../pages/MainPage";
+import LoginPage from "../pages/LoginPage";
+import SignupPage from "../pages/SignupPage";
+import GamePage from "../pages/GamePage";
+import AuthService from "../auth/AuthService";
+import LocalAuthProvider from "../auth/LocalAuthProvider";
+import I18n from "../localization/I18n";
 
 type PageComponentType = { new (): any };
 type RouteHandlerType = () => HTMLElement;
@@ -21,13 +22,13 @@ class Router {
 	private app: HTMLElement;
 	private pathToRedirect: string = "/login";
 	private authService: AuthService;
-  private static instance: Router | null = null;
+	private static instance: Router | null = null;
 
 	constructor() {
-    const app = document.getElementById("app");
-    if (!app) {
-      throw new Error("Element with id 'app' not found");
-    }
+		const app = document.getElementById("app");
+		if (!app) {
+			throw new Error("Element with id 'app' not found");
+		}
 		this.app = app;
 		this.authService = AuthService.getInstance();
 		this.routes = {
@@ -61,12 +62,12 @@ class Router {
 		});
 	}
 
-  public static getInstance(): Router {
-    if (!Router.instance) {
-      Router.instance = new Router();
-    }
-    return Router.instance;
-  }
+	public static getInstance(): Router {
+		if (!Router.instance) {
+			Router.instance = new Router();
+		}
+		return Router.instance;
+	}
 
 	public navigateTo(path: string) {
 		history.pushState(null, "", path);

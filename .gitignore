@@ -4,8 +4,10 @@
 **/._.DS_Store*.js
 
 *.pem
-*/myenv
 *.pyc
-__pycache__/
-node_modules
+*/myenv
 /backend/.env
+__pycache__/
+backend/myenv
+dist
+node_modules
