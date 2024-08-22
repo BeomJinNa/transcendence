@@ -39,12 +39,6 @@ export default class GameSettings {
 		// Store the player count in the session storage
 		sessionStorage.setItem("playerCount", playerCount.toString());
 
-		// Log the stored playerCount value
-		console.log(
-			"GameSettings: playerCount stored in sessionStorage =",
-			playerCount
-		);
-
 		// Navigate to the game page
 		Router.getInstance().navigateTo("/game");
 	}
