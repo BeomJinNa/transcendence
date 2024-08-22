@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,8 +22,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'dlsfuf0316@gmail.com'
-EMAIL_HOST_PASSWORD = 'kukj wxpb bizi bgbx'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # Application definition
 
@@ -113,18 +114,18 @@ SIMPLE_JWT = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }, 
     # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'your_database_name',       # 사용할 데이터베이스 이름
-    #     'USER': 'your_database_user',       # 데이터베이스 사용자
-    #     'PASSWORD': 'your_password',        # 사용자 비밀번호
-    #     'HOST': 'localhost',                # 데이터베이스 호스트 (로컬에서는 'localhost')
-    #     'PORT': '5432',                     # 데이터베이스 포트 (기본값은 5432)
-    # }
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }, 
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB'),           # 사용할 데이터베이스 이름
+        'USER': os.getenv('POSTGRES_USER'),         # 데이터베이스 사용자
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'), # 사용자 비밀번호
+        'HOST': 'localhost',                        # 데이터베이스 호스트 (로컬에서는 'localhost')
+        'PORT': '5432',                             # 데이터베이스 포트 (기본값은 5432)
+    }
 }
 
 
