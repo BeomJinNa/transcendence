@@ -90,3 +90,42 @@ class RegisterView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+# 토큰 갱신
+class RefreshView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        refresh_token = request.data.get('refresh_token')
+    
+        if not refresh_token:
+            return Response({'detail': "리프레시 토큰이 필요합니다."}, status=status.HTTP_400_BAD_REQUEST)
+    
+        try:
+            token = RefreshToken(refresh_token)
+            user = User.objects.get(id=token.payload['user_id'])
+            new_refresh = RefreshToken.for_user(user)
+
+            return Response({
+                'refresh': str(new_refresh),
+                'access': str(new_refresh.access_token)
+            }, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            return Response({'detail': "유효하지 않은 토큰입니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MyselfView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = request.data.get('username')
+        if not username:
+            return Response({'detail': "username이 필요합니다"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = User.objects.get(username=username)
+            return Response({'id' : user.id}, status=status.HTTP_200_OK)
+        
+        except User.DoesNotExist:
+            return Response({'detail': "해당 username을 가진 사용자가 없습니다."}, status=status.HTTP_400_BAD_REQUEST)

@@ -36,11 +36,31 @@ Request Body
 ```
 
 ---
-method : `POST`  
-uri : `/api/logout`  
+method : `POST`
+uri : `/api/logout`
 Request Body
 ```json
 {
     // refresh_token: string,
+}
+```
+
+---
+method : `POST`
+uri : `/api/refresh`
+Request Body
+```json
+{
+    // refresh_token: string,
+}
+```
+
+---
+method : `POST`
+uri : `/api/me`
+Request Body
+```json
+{
+    // username: string,
 }
 ```
