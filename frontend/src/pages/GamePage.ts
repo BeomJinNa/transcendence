@@ -5,7 +5,7 @@ import { createButton } from "./formUtils";
 import Router from "../routes/Router";
 
 export default class GamePage {
-	private gameModules: GameModule[] = [];
+	private gameModule: GameModule | null = null; // 하나의 GameModule만 관리
 
 	public render(): HTMLElement {
 		console.log("GamePage: render called");
@@ -21,6 +21,7 @@ export default class GamePage {
 			console.log("GamePage: No player count, showing settings");
 			const settings = new GameSettings();
 			container.appendChild(settings.render());
+			container.appendChild(this.createBackButton()); // 설정 화면에서 메인 페이지로 돌아가는 버튼 추가
 		} else {
 			// Show game if settings are stored
 			console.log("GamePage: Player count found, starting game");
@@ -28,53 +29,51 @@ export default class GamePage {
 			const gameArea = this.createGameArea();
 			container.appendChild(gameArea);
 
-			container.appendChild(this.createBackButton());
+			container.appendChild(this.createBackButton()); // 게임 중에도 메인 페이지로 돌아가는 버튼
 		}
 
 		return container;
-	}
-
-	private initializeState(): void {
-		console.log("GamePage: Initializing state");
-		this.gameModules = [];
-		sessionStorage.removeItem("playerCount");
 	}
 
 	private createGameArea(): HTMLElement {
 		const gameArea = document.createElement("div");
 		gameArea.id = "gameArea";
 
-		// Add game modules based on player count
-		this.gameModules.forEach((module) => {
+		if (this.gameModule) {
 			console.log("GamePage: Adding game module to gameArea");
-			gameArea.appendChild(module.getElement());
-		});
+			gameArea.appendChild(this.gameModule.getElement());
+		}
 
 		return gameArea;
 	}
 
 	private startGame(playerCount: number): void {
 		console.log("GamePage: Starting game with playerCount =", playerCount);
-		for (let i = 1; i <= playerCount; i++) {
-			const controlKeys = this.getControlKeysForPlayer(i);
-			const gameModule = new GameModule(i, controlKeys);
-			this.gameModules.push(gameModule);
-			console.log("GamePage: Added game module for player", i);
-		}
+
+		// GameModule은 하나만 생성하고, 설정을 인원수에 맞게 조정
+		const controlKeys = this.getControlKeysForPlayer(playerCount);
+		this.gameModule = new GameModule(playerCount, controlKeys);
+
+		console.log(
+			"GamePage: Game module created with settings for",
+			playerCount,
+			"players"
+		);
 	}
 
-	private getControlKeysForPlayer(playerId: number): {
+	private getControlKeysForPlayer(playerCount: number): {
 		[action: string]: string;
 	} {
+		// 플레이어 수에 따른 조작 키 설정
 		const controls: {
-			[key: number]: { moveLeft: string; moveRight: string; jump: string };
+			[action: string]: string;
 		} = {
-			1: { moveLeft: "ArrowLeft", moveRight: "ArrowRight", jump: "ArrowUp" },
-			2: { moveLeft: "a", moveRight: "d", jump: "w" },
-			3: { moveLeft: "j", moveRight: "l", jump: "i" },
-			4: { moveLeft: "4", moveRight: "6", jump: "8" },
+			moveLeft: playerCount === 2 ? "ArrowLeft" : "a",
+			moveRight: playerCount === 2 ? "ArrowRight" : "d",
+			jump: playerCount === 2 ? "ArrowUp" : "w",
 		};
-		return controls[playerId] || controls[1];
+
+		return controls;
 	}
 
 	private createBackButton(): HTMLElement {
@@ -87,6 +86,7 @@ export default class GamePage {
 
 	private endGame(): void {
 		console.log("GamePage: Ending game and clearing state");
-		this.initializeState(); // 상태 초기화
+		this.gameModule = null;
+		sessionStorage.removeItem("playerCount");
 	}
 }
