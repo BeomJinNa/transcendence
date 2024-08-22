@@ -2,23 +2,36 @@ import AuthProvider from "./AuthProvider";
 import StateManager from "../userState/StateManager";
 
 class LocalAuthProvider implements AuthProvider {
-	// 로컬 환경에서의 간단한 로그인 처리
+	private readonly TOKEN_KEY = "authToken";
+	private readonly USER_KEY = "user";
+
+	constructor() {
+		// 앱이 시작될 때 localStorage를 StateManager와 동기화
+		this.syncStateWithLocalStorage();
+	}
+
+	private syncStateWithLocalStorage(): void {
+		const token = localStorage.getItem(this.TOKEN_KEY);
+		const user = localStorage.getItem(this.USER_KEY);
+		if (token && user) {
+			StateManager.setState("isAuthenticated", true);
+			StateManager.setState("token", token);
+			StateManager.setState("user", JSON.parse(user));
+		} else {
+			StateManager.setState("isAuthenticated", false);
+			StateManager.setState("token", null);
+			StateManager.setState("user", null);
+		}
+	}
+
 	async login(email: string, password: string): Promise<boolean> {
 		try {
-			// 성공적으로 로그인한 것처럼 처리
 			const token = "dummy-token";
 			const user = { email, nickname: "LocalUser" };
 
-			// 토큰과 사용자 정보를 저장
-			localStorage.setItem("authToken", token);
-			StateManager.setState("isAuthenticated", true);
-			StateManager.setState("token", token);
-			StateManager.setState("user", user);
-
-			console.log(
-				"Login successful, state updated:",
-				StateManager.getState("isAuthenticated")
-			);
+			localStorage.setItem(this.TOKEN_KEY, token);
+			localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+			this.syncStateWithLocalStorage(); // 로그인 후 상태를 동기화
 
 			return true;
 		} catch (error) {
@@ -27,31 +40,25 @@ class LocalAuthProvider implements AuthProvider {
 		}
 	}
 
-	// 로그아웃 처리
 	logout(): void {
-		console.log("Logging out");
-		localStorage.removeItem("authToken");
-		StateManager.setState("isAuthenticated", false);
-		StateManager.setState("token", null);
-		StateManager.setState("user", null);
+		localStorage.removeItem(this.TOKEN_KEY);
+		localStorage.removeItem(this.USER_KEY);
+		this.syncStateWithLocalStorage(); // 로그아웃 후 상태를 동기화
 	}
 
-	// 인증 상태를 반환
 	isAuthenticated(): boolean {
-		console.log("Checking authentication state");
+		// 상태를 동기화하고 나서 인증 상태를 확인
+		this.syncStateWithLocalStorage();
 		return StateManager.getState("isAuthenticated");
 	}
 
-	// 토큰을 반환
 	getToken(): string | null {
-		console.log("Getting token");
-		return StateManager.getState("token");
+		return localStorage.getItem(this.TOKEN_KEY);
 	}
 
-	// 사용자 정보를 반환
 	getUser(): { email: string; nickname: string } | null {
-		console.log("Getting user info");
-		return StateManager.getState("user");
+		const user = localStorage.getItem(this.USER_KEY);
+		return user ? JSON.parse(user) : null;
 	}
 
 	async signup(
@@ -59,12 +66,9 @@ class LocalAuthProvider implements AuthProvider {
 		password: string,
 		nickname: string
 	): Promise<boolean> {
-		console.log(`Signing up with ${email}, ${nickname}`);
+		// 실제 구현에서는 서버와 통신하여 사용자를 등록합니다.
 		return true;
 	}
 }
 
 export default LocalAuthProvider;
-
-//개발 과정에서의 임시 모듈이므로 이후에 OAuthProvider로 대체될 예정
-//OAuthProvider로 대체되면 LocalAuthProvider는 삭제될 예정

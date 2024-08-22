@@ -3,7 +3,6 @@ import LoginPage from "../pages/LoginPage";
 import SignupPage from "../pages/SignupPage";
 import GamePage from "../pages/GamePage";
 import AuthService from "../auth/AuthService";
-import LocalAuthProvider from "../auth/LocalAuthProvider";
 import I18n from "../localization/I18n";
 
 type PageComponentType = { new (): any };
@@ -14,6 +13,7 @@ type RoutesType = Record<
 	{
 		handler: RouteHandlerType;
 		restricted?: boolean;
+		restrictedIfAuthenticated?: boolean;
 	}
 >;
 
@@ -37,20 +37,22 @@ class Router {
 			},
 			"/login": {
 				handler: this.loadPage(LoginPage),
+				restrictedIfAuthenticated: true, // 로그인 상태에서 접근 제한
 			},
 			"/signup": {
 				handler: this.loadPage(SignupPage),
+				restrictedIfAuthenticated: true, // 로그인 상태에서 접근 제한
 			},
 			"/game": {
 				handler: this.loadPage(GamePage),
-				restricted: true,
+				restricted: true, // 로그인이 필요한 페이지
 			},
 		};
 
 		history.replaceState(null, "", document.location.href);
 		this.render(window.location.pathname);
 
-		window.addEventListener("popstate", (event) => {
+		window.addEventListener("popstate", () => {
 			this.render(window.location.pathname);
 		});
 		document.addEventListener("click", (event) => {
@@ -77,9 +79,16 @@ class Router {
 	private render(path: string) {
 		const route = this.routes[path] || this.routes["/"];
 
+		// 로그인이 필요한 페이지 접근 시
 		if (route.restricted && !this.authService.isAuthenticated()) {
 			alert(I18n.t("youMustBeLoggedIn"));
 			this.navigateTo(this.pathToRedirect);
+			return;
+		}
+
+		// 로그인이 되어 있으면 접근할 수 없는 페이지 접근 시
+		if (route.restrictedIfAuthenticated && this.authService.isAuthenticated()) {
+			this.navigateTo("/");
 			return;
 		}
 

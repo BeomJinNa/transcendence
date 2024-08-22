@@ -1,5 +1,6 @@
 import I18n from "../../localization/I18n";
 import { createLabel, createSelect, createButton } from "../formUtils";
+import Router from "../../routes/Router";
 
 export default class GameSettings {
 	public render(): HTMLElement {
@@ -21,7 +22,8 @@ export default class GameSettings {
 		form.appendChild(playerCountSelect);
 
 		form.appendChild(
-			createButton(I18n.t("startGame"), () => {
+			createButton(I18n.t("startGame"), (event) => {
+				event.preventDefault();
 				const playerCount = parseInt(playerCountSelect.value, 10);
 				this.startGame(playerCount);
 			})
@@ -34,8 +36,16 @@ export default class GameSettings {
 	}
 
 	private startGame(playerCount: number): void {
-		// Store the player count in the session or pass it to the GamePage
+		// Store the player count in the session storage
 		sessionStorage.setItem("playerCount", playerCount.toString());
-		window.location.href = "/game";
+
+		// Log the stored playerCount value
+		console.log(
+			"GameSettings: playerCount stored in sessionStorage =",
+			playerCount
+		);
+
+		// Navigate to the game page
+		Router.getInstance().navigateTo("/game");
 	}
 }

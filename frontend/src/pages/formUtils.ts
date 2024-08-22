@@ -1,3 +1,5 @@
+import Router from "../routes/Router";
+
 export function createLabel(text: string, htmlFor?: string): HTMLElement {
 	const label = document.createElement("label");
 	label.textContent = text;
@@ -18,7 +20,7 @@ export function createInput(type: string, id?: string): HTMLInputElement {
 
 export function createButton(
 	text: string,
-	onClick: () => void
+	onClick: (event: MouseEvent) => void
 ): HTMLButtonElement {
 	const button = document.createElement("button");
 	button.textContent = text;
@@ -31,6 +33,10 @@ export function createLink(href: string, text: string): HTMLElement {
 	link.href = href;
 	link.textContent = text;
 	link.style.display = "block";
+	link.addEventListener("click", (event) => {
+		event.preventDefault();
+		Router.getInstance().navigateTo(href);
+	});
 	return link;
 }
 
@@ -45,4 +51,17 @@ export function createSelect(
 		select.appendChild(option);
 	});
 	return select;
+}
+
+export function createFormGroup(
+	labelText: string,
+	inputType: string,
+	inputId?: string
+): HTMLElement {
+	const group = document.createElement("div");
+	const label = createLabel(labelText, inputId);
+	const input = createInput(inputType, inputId);
+	group.appendChild(label);
+	group.appendChild(input);
+	return group;
 }

@@ -8,16 +8,22 @@ export default class GamePage {
 	private gameModules: GameModule[] = [];
 
 	public render(): HTMLElement {
+		console.log("GamePage: render called");
+
 		const container = document.createElement("div");
 
 		// Check if game settings have been selected
 		const playerCount = sessionStorage.getItem("playerCount");
+		console.log("GamePage: playerCount from sessionStorage =", playerCount);
+
 		if (!playerCount) {
 			// Show settings if no settings are stored
+			console.log("GamePage: No player count, showing settings");
 			const settings = new GameSettings();
 			container.appendChild(settings.render());
 		} else {
 			// Show game if settings are stored
+			console.log("GamePage: Player count found, starting game");
 			this.startGame(parseInt(playerCount, 10));
 			const gameArea = this.createGameArea();
 			container.appendChild(gameArea);
@@ -28,12 +34,19 @@ export default class GamePage {
 		return container;
 	}
 
+	private initializeState(): void {
+		console.log("GamePage: Initializing state");
+		this.gameModules = [];
+		sessionStorage.removeItem("playerCount");
+	}
+
 	private createGameArea(): HTMLElement {
 		const gameArea = document.createElement("div");
 		gameArea.id = "gameArea";
 
 		// Add game modules based on player count
 		this.gameModules.forEach((module) => {
+			console.log("GamePage: Adding game module to gameArea");
 			gameArea.appendChild(module.getElement());
 		});
 
@@ -41,10 +54,12 @@ export default class GamePage {
 	}
 
 	private startGame(playerCount: number): void {
+		console.log("GamePage: Starting game with playerCount =", playerCount);
 		for (let i = 1; i <= playerCount; i++) {
 			const controlKeys = this.getControlKeysForPlayer(i);
 			const gameModule = new GameModule(i, controlKeys);
 			this.gameModules.push(gameModule);
+			console.log("GamePage: Added game module for player", i);
 		}
 	}
 
@@ -64,13 +79,14 @@ export default class GamePage {
 
 	private createBackButton(): HTMLElement {
 		return createButton(I18n.t("backToMainButton"), () => {
-			this.endGame(); // 게임 중단 로직
+			console.log("GamePage: Back button clicked");
+			this.endGame();
 			Router.getInstance().navigateTo("/"); // 메인 페이지로 리디렉션
 		});
 	}
 
 	private endGame(): void {
-		// 게임을 중단하고 필요한 정리 작업 수행
-		this.gameModules = [];
+		console.log("GamePage: Ending game and clearing state");
+		this.initializeState(); // 상태 초기화
 	}
 }

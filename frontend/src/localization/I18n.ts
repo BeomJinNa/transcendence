@@ -4,7 +4,8 @@ class I18n {
 	private translations: { [key: string]: Translation } = {};
 
 	constructor(defaultLocale: string) {
-		this.locale = defaultLocale;
+		const savedLocale = localStorage.getItem("locale");
+		this.locale = savedLocale || defaultLocale;
 	}
 
 	public async loadTranslations() {
@@ -19,6 +20,7 @@ class I18n {
 	public async setLocale(locale: string): Promise<void> {
 		if (this.locale !== locale) {
 			this.locale = locale;
+			localStorage.setItem("locale", locale);
 			await this.loadTranslations();
 		}
 	}

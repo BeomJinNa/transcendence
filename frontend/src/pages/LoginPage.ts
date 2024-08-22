@@ -1,6 +1,6 @@
 import I18n from "../localization/I18n";
 import AuthService from "../auth/AuthService";
-import { createLabel, createInput, createButton } from "./formUtils";
+import { createFormGroup, createButton } from "./formUtils";
 import Router from "../routes/Router";
 
 export default class LoginPage {
@@ -12,10 +12,12 @@ export default class LoginPage {
 		link.href = "/css/LoginPage.css";
 		document.head.appendChild(link);
 
+		//HEAD
 		const heading = document.createElement("h1");
 		heading.textContent = I18n.t("loginPageTitle");
 		container.appendChild(heading);
 
+		//BODY
 		const form = this.createLoginForm();
 		container.appendChild(form);
 
@@ -23,12 +25,11 @@ export default class LoginPage {
 	}
 
 	private createLoginForm(): HTMLElement {
-		const form = document.createElement("div");
+		const form = document.createElement("form");
 
-		const emailLabel = createLabel(I18n.t("emailLabel"));
-		const emailInput = createInput("email");
-		const passwordLabel = createLabel(I18n.t("passwordLabel"));
-		const passwordInput = createInput("password");
+		const emailGroup = createFormGroup(I18n.t("emailLabel"), "email");
+		const passwordGroup = createFormGroup(I18n.t("passwordLabel"), "password");
+
 		const submitButton = createButton(I18n.t("loginButton"), async () => {
 			const email = (
 				form.querySelector('input[type="email"]') as HTMLInputElement
@@ -47,10 +48,8 @@ export default class LoginPage {
 			}
 		});
 
-		form.appendChild(emailLabel);
-		form.appendChild(emailInput);
-		form.appendChild(passwordLabel);
-		form.appendChild(passwordInput);
+		form.appendChild(emailGroup);
+		form.appendChild(passwordGroup);
 		form.appendChild(submitButton);
 
 		return form;

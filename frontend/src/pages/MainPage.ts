@@ -1,5 +1,4 @@
 import I18n from "../localization/I18n";
-import StateManager from "../userState/StateManager";
 import { createLink, createButton, createSelect } from "./formUtils";
 import AuthService from "../auth/AuthService";
 import Router from "../routes/Router";
@@ -21,7 +20,7 @@ export default class MainPage {
 		// BODY
 		container.appendChild(this.createLanguageSelector());
 
-		const isAuthenticated = StateManager.getState("isAuthenticated");
+		const isAuthenticated = AuthService.getInstance().isAuthenticated();
 
 		if (!isAuthenticated) {
 			container.appendChild(createLink("/login", I18n.t("login")));
