@@ -5,31 +5,32 @@ import { createButton } from "./formUtils";
 import Router from "../routes/Router";
 
 export default class GamePage {
-	private gameModule: GameModule | null = null; // 하나의 GameModule만 관리
+	private gameModule: GameModule | null = null;
+	private scoreDisplay: HTMLElement | null = null;
 
 	public render(): HTMLElement {
 		console.log("GamePage: render called");
 
 		const container = document.createElement("div");
 
-		// Check if game settings have been selected
 		const playerCount = sessionStorage.getItem("playerCount");
 		console.log("GamePage: playerCount from sessionStorage =", playerCount);
 
 		if (!playerCount) {
-			// Show settings if no settings are stored
 			console.log("GamePage: No player count, showing settings");
 			const settings = new GameSettings();
 			container.appendChild(settings.render());
-			container.appendChild(this.createBackButton()); // 설정 화면에서 메인 페이지로 돌아가는 버튼 추가
+			container.appendChild(this.createBackButton());
 		} else {
-			// Show game if settings are stored
 			console.log("GamePage: Player count found, starting game");
 			this.startGame(parseInt(playerCount, 10));
 			const gameArea = this.createGameArea();
 			container.appendChild(gameArea);
 
-			container.appendChild(this.createBackButton()); // 게임 중에도 메인 페이지로 돌아가는 버튼
+			// Create game UI (Instructions + Score)
+			this.createGameUI(container);
+
+			container.appendChild(this.createBackButton());
 		}
 
 		return container;
@@ -47,33 +48,49 @@ export default class GamePage {
 		return gameArea;
 	}
 
+	private createGameUI(container: HTMLElement): void {
+		const gameUI = document.createElement("div");
+		gameUI.style.position = "absolute";
+		gameUI.style.top = "2vh";
+		gameUI.style.width = "100%";
+		gameUI.style.textAlign = "center";
+		gameUI.style.color = "#ffffff";
+
+		if (this.gameModule) {
+			// 조작 키 안내 표시
+			const instructions = document.createElement("div");
+			instructions.style.fontSize = "2vh";
+			instructions.innerHTML = this.gameModule.getControlInstructions();
+			gameUI.appendChild(instructions);
+
+			// 스코어 표시
+			this.scoreDisplay = document.createElement("div");
+			this.scoreDisplay.style.marginTop = "2vh";
+			this.scoreDisplay.style.fontSize = "3vh";
+			this.scoreDisplay.innerHTML = `0 : 0`; // 초기 스코어
+			gameUI.appendChild(this.scoreDisplay);
+		}
+
+		container.appendChild(gameUI);
+	}
+
 	private startGame(playerCount: number): void {
 		console.log("GamePage: Starting game with playerCount =", playerCount);
 
-		// GameModule은 하나만 생성하고, 설정을 인원수에 맞게 조정
-		const controlKeys = this.getControlKeysForPlayer(playerCount);
-		this.gameModule = new GameModule(playerCount, controlKeys);
+		this.gameModule = new GameModule(playerCount);
+
+		// 스코어 업데이트 콜백 설정
+		this.gameModule.setScoreCallback((scoreA: number, scoreB: number) => {
+			if (this.scoreDisplay) {
+				this.scoreDisplay.innerHTML = `${scoreA} : ${scoreB}`;
+			}
+		});
 
 		console.log(
 			"GamePage: Game module created with settings for",
 			playerCount,
 			"players"
 		);
-	}
-
-	private getControlKeysForPlayer(playerCount: number): {
-		[action: string]: string;
-	} {
-		// 플레이어 수에 따른 조작 키 설정
-		const controls: {
-			[action: string]: string;
-		} = {
-			moveLeft: playerCount === 2 ? "ArrowLeft" : "a",
-			moveRight: playerCount === 2 ? "ArrowRight" : "d",
-			jump: playerCount === 2 ? "ArrowUp" : "w",
-		};
-
-		return controls;
 	}
 
 	private createBackButton(): HTMLElement {
@@ -86,7 +103,13 @@ export default class GamePage {
 
 	private endGame(): void {
 		console.log("GamePage: Ending game and clearing state");
-		this.gameModule = null;
+
+		if (this.gameModule) {
+			this.gameModule.stopAnimation();
+			this.gameModule.removeEventListeners();
+			this.gameModule = null;
+		}
+
 		sessionStorage.removeItem("playerCount");
 	}
 }
