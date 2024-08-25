@@ -12,12 +12,10 @@ export default class SignupPage {
 		link.href = "/css/SignupPage.css";
 		document.head.appendChild(link);
 
-		//HEAD
 		const heading = document.createElement("h1");
 		heading.textContent = I18n.t("signupPageTitle");
 		container.appendChild(heading);
 
-		//BODY
 		const form = this.createSignupForm();
 		container.appendChild(form);
 

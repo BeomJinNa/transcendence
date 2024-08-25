@@ -27,7 +27,6 @@ export default class GamePage {
 			const gameArea = this.createGameArea();
 			container.appendChild(gameArea);
 
-			// Create game UI (Instructions + Score)
 			this.createGameUI(container);
 
 			container.appendChild(this.createBackButton());
@@ -57,17 +56,15 @@ export default class GamePage {
 		gameUI.style.color = "#ffffff";
 
 		if (this.gameModule) {
-			// 조작 키 안내 표시
 			const instructions = document.createElement("div");
 			instructions.style.fontSize = "2vh";
 			instructions.innerHTML = this.gameModule.getControlInstructions();
 			gameUI.appendChild(instructions);
 
-			// 스코어 표시
 			this.scoreDisplay = document.createElement("div");
 			this.scoreDisplay.style.marginTop = "2vh";
 			this.scoreDisplay.style.fontSize = "3vh";
-			this.scoreDisplay.innerHTML = `0 : 0`; // 초기 스코어
+			this.scoreDisplay.innerHTML = `0 : 0`;
 			gameUI.appendChild(this.scoreDisplay);
 		}
 
@@ -79,7 +76,6 @@ export default class GamePage {
 
 		this.gameModule = new GameModule(playerCount);
 
-		// 스코어 업데이트 콜백 설정
 		this.gameModule.setScoreCallback((scoreA: number, scoreB: number) => {
 			if (this.scoreDisplay) {
 				this.scoreDisplay.innerHTML = `${scoreA} : ${scoreB}`;
@@ -97,7 +93,7 @@ export default class GamePage {
 		return createButton(I18n.t("backToMainButton"), () => {
 			console.log("GamePage: Back button clicked");
 			this.endGame();
-			Router.getInstance().navigateTo("/"); // 메인 페이지로 리디렉션
+			Router.getInstance().navigateTo("/");
 		});
 	}
 

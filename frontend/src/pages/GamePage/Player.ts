@@ -12,7 +12,6 @@ export class Player {
 		this.controlKeys = controlKeys;
 	}
 
-	// 정적 메서드: 모든 플레이어의 조작키를 반환
 	static getControlKeys(): {
 		[playerId: number]: { moveLeft: string; moveRight: string };
 	} {
@@ -24,7 +23,6 @@ export class Player {
 		};
 	}
 
-	// 플레이어의 패들을 움직이는 메서드
 	movePaddle(
 		directionMultiplier: number,
 		moveDistance: number,

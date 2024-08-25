@@ -79,14 +79,12 @@ class Router {
 	private render(path: string) {
 		const route = this.routes[path] || this.routes["/"];
 
-		// 로그인이 필요한 페이지 접근 시
 		if (route.restricted && !this.authService.isAuthenticated()) {
 			alert(I18n.t("youMustBeLoggedIn"));
 			this.navigateTo(this.pathToRedirect);
 			return;
 		}
 
-		// 로그인이 되어 있으면 접근할 수 없는 페이지 접근 시
 		if (route.restrictedIfAuthenticated && this.authService.isAuthenticated()) {
 			this.navigateTo("/");
 			return;

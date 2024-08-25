@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function init() {
-	await I18n.loadTranslations(); // 언어 파일 로드
+	await I18n.loadTranslations();
 
 	const app = document.getElementById("app");
 	if (app) {

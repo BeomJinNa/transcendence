@@ -10,7 +10,6 @@ export default class GameSettings {
 
 		const form = document.createElement("form");
 
-		// Select player count
 		form.appendChild(createLabel(I18n.t("numberOfPlayers")));
 
 		const playerCountSelect = createSelect([
@@ -36,10 +35,8 @@ export default class GameSettings {
 	}
 
 	private startGame(playerCount: number): void {
-		// Store the player count in the session storage
 		sessionStorage.setItem("playerCount", playerCount.toString());
 
-		// Navigate to the game page
 		Router.getInstance().navigateTo("/game");
 	}
 }

@@ -30,4 +30,4 @@ class I18n {
 	}
 }
 
-export default new I18n("en"); // 기본 언어는 영어로 설정
+export default new I18n("en");

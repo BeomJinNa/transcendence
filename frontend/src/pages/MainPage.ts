@@ -12,12 +12,10 @@ export default class MainPage {
 		link.href = "/css/MainPage.css";
 		document.head.appendChild(link);
 
-		// HEAD
 		const heading = document.createElement("h1");
 		heading.textContent = I18n.t("mainPageTitle");
 		container.appendChild(heading);
 
-		// BODY
 		container.appendChild(this.createLanguageSelector());
 
 		const isAuthenticated = AuthService.getInstance().isAuthenticated();
