@@ -9,6 +9,10 @@ module.exports = {
 				use: "ts-loader",
 				exclude: /node_modules/, // node_modules 디렉토리는 제외
 			},
+			{
+				test: /\.css$/, // .css 확장자 파일을 처리
+				use: ["style-loader", "css-loader"], // CSS 로더 및 스타일 로더 추가
+			},
 		],
 	},
 	resolve: {

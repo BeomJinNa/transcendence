@@ -1,6 +1,7 @@
 import Router from "./routes/Router";
 import I18n from "./localization/I18n";
 import AuthService from "./auth/AuthService";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 document.addEventListener("DOMContentLoaded", () => {
 	init();
