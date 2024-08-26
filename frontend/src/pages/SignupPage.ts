@@ -55,8 +55,8 @@ export default class SignupPage {
     });
 
     form.appendChild(usernameGroup);
-    form.appendChild(passwordGroup);
     form.appendChild(emailGroup);
+    form.appendChild(passwordGroup);
     form.appendChild(submitButton);
 
     return form;

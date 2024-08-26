@@ -44,7 +44,11 @@ export default class TwoFactorAuthProvider implements AuthProvider {
     nickname: string,
     password: string
   ): Promise<boolean> {
-    const result = await apiClient.post("/signup/", { email, nickname, password });
+    const result = await apiClient.post("/register/", {
+      email,
+      username: nickname,
+      password,
+    });
     if (!result.ok) {
       return false;
     }
