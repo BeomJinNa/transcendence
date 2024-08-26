@@ -56,8 +56,20 @@ MIDDLEWARE = [
 
 # CORS 관련 설정
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = [ os.getenv('DJANGO_CORS_ALLOWED_ORIGINS') ]
+CORS_ALLOWED_ORIGINS = os.getenv('DJANGO_CORS_ALLOWED_ORIGINS').split(',')
 CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOWED_ORIGINS = [
+#     "https://localhost",
+#     "http://localhost"
+# ]
+# CORS_ALLOW_HEADERS = (
+#     "accept",
+#     "authorization",
+#     "content-type",
+#     "user-agent",
+#     "x-csrftoken",
+#     "x-requested-with",
+# )
 
 
 ROOT_URLCONF = 'main.urls'
@@ -131,7 +143,7 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB'),           # 사용할 데이터베이스 이름
         'USER': os.getenv('POSTGRES_USER'),         # 데이터베이스 사용자
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'), # 사용자 비밀번호
-        'HOST': 'localhost',                        # 데이터베이스 호스트 (로컬에서는 'localhost')
+        'HOST': 'postgres',                        # 데이터베이스 호스트 (로컬에서는 'localhost')
         'PORT': '5432',                             # 데이터베이스 포트 (기본값은 5432)
     }
 }
@@ -177,3 +189,19 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'mylogger': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
+}

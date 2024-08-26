@@ -7,6 +7,8 @@ from django.contrib.auth import authenticate, get_user_model
 from .serializers import UserSerializer
 from main.customEmail import send_custom_email
 import os
+import logging
+logger = logging.getLogger('mylogger')
 
 User = get_user_model()
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
@@ -24,7 +26,8 @@ class LoginView(APIView):
 
         if user is not None:
             tempToken = str(RefreshToken.for_user(user))
-            link = f"{baseurl}/token?t={tempToken}"
+            link = f"{baseurl}/login?t={tempToken}"
+            logger.info(f"2FA code link: {link}")
 
             send_custom_email(
                 '인증링크',
