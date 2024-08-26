@@ -1,5 +1,5 @@
 import AuthProvider from "./AuthProvider";
-import LocalAuthProvider from "./LocalAuthProvider";
+import TwoFactorAuthProvider from "./TwoFactorAuthProvider";
 
 export default class AuthService {
 	private static instance: AuthService | null = null;
@@ -11,13 +11,14 @@ export default class AuthService {
 
 	public static getInstance(): AuthService {
 		if (!AuthService.instance) {
-			AuthService.instance = new AuthService(new LocalAuthProvider());
+			AuthService.instance = new AuthService(new TwoFactorAuthProvider());
 		}
 		return AuthService.instance;
 	}
 
-	async login(email: string, password: string): Promise<boolean> {
-		return await this.provider.login(email, password);
+	async login(login_token: string): Promise<boolean> {
+		return await this.provider.login(login_token);
+		// throw new Error("Method not implemented.");
 	}
 
 	logout(): void {
@@ -28,8 +29,12 @@ export default class AuthService {
 		return this.provider.isAuthenticated();
 	}
 
-	getToken(): string | null {
-		return this.provider.getToken();
+	getAccessToken(): string | null {
+		return this.provider.getAccessToken();
+	}
+
+	refresh(): Promise<boolean> {
+		return this.provider.refresh();
 	}
 
 	getUser(): { email: string; nickname: string } | null {

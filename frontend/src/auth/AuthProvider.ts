@@ -1,8 +1,9 @@
 interface AuthProvider {
-	login(email: string, password: string): Promise<boolean>;
+	login(login_token: string): Promise<boolean>;
 	logout(): void;
 	isAuthenticated(): boolean;
-	getToken(): string | null;
+	getAccessToken(): string | null;
+	refresh(): Promise<boolean>;
 	getUser(): { email: string; nickname: string } | null;
 	signup(email: string, password: string, nickname: string): Promise<boolean>;
 }
