@@ -10,8 +10,8 @@ export default class TwoFactorAuthProvider implements AuthProvider {
       return false;
     }
     const responseBody = await result.json();
-    localStorage.setItem("access_token", responseBody.access_token);
-    localStorage.setItem("refresh_token", responseBody.refresh_token);
+    localStorage.setItem("access_token", responseBody.access);
+    localStorage.setItem("refresh_token", responseBody.refresh);
     return true;
   }
   logout(): void {
@@ -25,17 +25,15 @@ export default class TwoFactorAuthProvider implements AuthProvider {
     return localStorage.getItem("access_token");
   }
   async refresh(): Promise<boolean> {
-    let requestBody;
-    try {
-      requestBody = await apiClient.post("/refresh/", {
-        refresh_token: localStorage.getItem("refresh_token"),
-      });
-    } catch (e) {
-      console.error(e);
+    const result = await apiClient.post("/refresh/", {
+      refresh_token: localStorage.getItem("refresh_token"),
+    });
+    if (!result.ok) {
       return false;
     }
-    localStorage.setItem("access_token", requestBody.access_token);
-    localStorage.setItem("refresh_token", requestBody.refresh_token);
+    const responseBody = await result.json();
+    localStorage.setItem("access_token", responseBody.access);
+    localStorage.setItem("refresh_token", responseBody.refresh);
     return true;
   }
   getUser(): { email: string; nickname: string } | null {
@@ -46,9 +44,8 @@ export default class TwoFactorAuthProvider implements AuthProvider {
     nickname: string,
     password: string
   ): Promise<boolean> {
-    try {
-      await apiClient.post("/signup/", { email, nickname, password });
-    } catch (e) {
+    const result = await apiClient.post("/signup/", { email, nickname, password });
+    if (!result.ok) {
       return false;
     }
     return true;

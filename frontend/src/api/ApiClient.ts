@@ -61,10 +61,6 @@ class ApiClient {
       return await this.request(method, url, data, retryCount + 1);
     }
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
     return response;
   }
 
