@@ -49,7 +49,7 @@ export default class LoginPage {
   private createLoginForm(): HTMLElement {
     const form = document.createElement("form");
 
-    const emailGroup = createFormGroup(I18n.t("emailLabel"), "username");
+    const usernameGroup = createFormGroup(I18n.t("nicknameLabel"), "username");
     const passwordGroup = createFormGroup(I18n.t("passwordLabel"), "password");
 
     const submitButton = createButton(I18n.t("loginButton"), async () => {
@@ -74,7 +74,7 @@ export default class LoginPage {
       }
     });
 
-    form.appendChild(emailGroup);
+    form.appendChild(usernameGroup);
     form.appendChild(passwordGroup);
     form.appendChild(submitButton);
 
