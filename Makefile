@@ -19,36 +19,36 @@ re-dev:
 	make clean-dev; make dev
 
 up-dev:
-	docker-compose -f docker-compose.dev.yml up -d
+	docker compose -f docker-compose.dev.yml up -d
 
 up-prod:
-	docker-compose -f docker-compose.prod.yml up -d
+	docker compose -f docker-compose.prod.yml up -d
 
 down-dev:
-	docker-compose -f docker-compose.dev.yml down --remove-orphans
+	docker compose -f docker-compose.dev.yml down --remove-orphans
 
 down-prod:
-	docker-compose -f docker-compose.prod.yml down --remove-orphans
+	docker compose -f docker-compose.prod.yml down --remove-orphans
 
 build-dev:
-	docker-compose -f docker-compose.dev.yml build
+	docker compose -f docker-compose.dev.yml build
 
 build-prod:
-	docker-compose -f docker-compose.prod.yml build
+	docker compose -f docker-compose.prod.yml build
 
 dev:
-	docker-compose -f docker-compose.dev.yml up -d --build
+	docker compose -f docker-compose.dev.yml up -d --build
 
 prod:
-	docker-compose -f docker-compose.prod.yml up -d --build
+	docker compose -f docker-compose.prod.yml up -d --build
 
 clean-dev:
-	docker-compose -f docker-compose.dev.yml down --remove-orphans
+	docker compose -f docker-compose.dev.yml down --remove-orphans
 	docker volume rm $(docker volume ls -qf dangling=true)
 	docker rmi $(docker images -f "dangling=true" -q)
 
 clean-prod:
-	docker-compose -f docker-compose.prod.yml down --remove-orphans
+	docker compose -f docker-compose.prod.yml down --remove-orphans
 	docker volume rm $(docker volume ls -qf dangling=true)
 	docker rmi $(docker images -f "dangling=true" -q)
 
@@ -56,13 +56,13 @@ clean-certs:
 	rm -f $(LOCAL_SSL_CERT_KEY_PATH) $(LOCAL_SSL_CERT_PATH)
 
 restart-dev:
-	docker-compose -f docker-compose.dev.yml restart
+	docker compose -f docker-compose.dev.yml restart
 
 restart-prod:
-	docker-compose -f docker-compose.prod.yml restart
+	docker compose -f docker-compose.prod.yml restart
 
 logs-dev:
-	docker-compose -f docker-compose.dev.yml logs
+	docker compose -f docker-compose.dev.yml logs
 
 logs-prod:
-	docker-compose -f docker-compose.prod.yml logs
+	docker compose -f docker-compose.prod.yml logs
