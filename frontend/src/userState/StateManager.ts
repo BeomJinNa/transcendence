@@ -1,6 +1,6 @@
 type State = {
-	isAuthenticated: boolean;
-	token: string | null;
+	access_token: string | null;
+	refresh_token: string | null;
 	user: { email: string; nickname: string } | null;
 	currentPage: string;
 	gameState: string | null;
@@ -16,8 +16,8 @@ class StateManager {
 
 	private constructor() {
 		this.state = {
-			isAuthenticated: false,
-			token: null,
+			access_token: localStorage.getItem("access_token") || null,
+			refresh_token: localStorage.getItem("refresh_token") || null,
 			user: null,
 			currentPage: "/",
 			gameState: null,
@@ -61,18 +61,16 @@ class StateManager {
 	}
 
 	public initAuthState() {
-		const token = localStorage.getItem("authToken");
-		if (token) {
-			this.setState("isAuthenticated", true);
-			this.setState("token", token);
+		const access_token = localStorage.getItem("access_token");
+		if (access_token) {
+			this.setState("access_token", access_token);
 			// 추가로 사용자 정보를 가져와서 state에 설정할 수 있습니다.
 		}
 	}
 
 	public logout() {
-		localStorage.removeItem("authToken");
-		this.setState("isAuthenticated", false);
-		this.setState("token", null);
+		localStorage.removeItem("access_token");
+		this.setState("access_token", null);
 		this.setState("user", null);
 	}
 }

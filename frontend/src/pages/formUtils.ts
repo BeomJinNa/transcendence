@@ -21,8 +21,8 @@ export function createInput(type: string, id?: string): HTMLInputElement {
 export function createButton(
 	text: string,
 	onClick: (event: MouseEvent) => void
-): HTMLButtonElement {
-	const button = document.createElement("button");
+): HTMLDivElement {
+	const button = document.createElement("div");
 	button.textContent = text;
 	button.onclick = onClick;
 	return button;
