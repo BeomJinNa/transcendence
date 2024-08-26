@@ -61,15 +61,19 @@ export default class LoginPage {
       ).value;
 
       // const success = await AuthService.getInstance().login(username);
-      const result = await apiClient.post("/login/", {
-        username: username,
-        password,
-        baseurl: window.location.origin,
-      });
-      if (result.status === 200) {
-        alert(I18n.t("loginSuccess"));
-        // Router.getInstance().navigateTo("/");
-      } else {
+      try {
+        const result = await apiClient.post("/login/", {
+          username: username,
+          password,
+          baseurl: window.location.origin,
+        });
+        if (result.status === 200) {
+          alert(I18n.t("loginSuccess"));
+          // Router.getInstance().navigateTo("/");
+        } else {
+          alert(I18n.t("loginFailed"));
+        }
+      } catch (e) {
         alert(I18n.t("loginFailed"));
       }
     });

@@ -25,9 +25,14 @@ export default class TwoFactorAuthProvider implements AuthProvider {
     return localStorage.getItem("access_token");
   }
   async refresh(): Promise<boolean> {
-    const result = await apiClient.post("/refresh/", {
-      refresh_token: localStorage.getItem("refresh_token"),
-    });
+    let result;
+    try {
+      result = await apiClient.post("/refresh/", {
+        refresh_token: localStorage.getItem("refresh_token"),
+      });
+    } catch (e) {
+      return false;
+    }
     if (!result.ok) {
       return false;
     }
@@ -44,14 +49,18 @@ export default class TwoFactorAuthProvider implements AuthProvider {
     nickname: string,
     password: string
   ): Promise<boolean> {
-    const result = await apiClient.post("/register/", {
-      email,
-      username: nickname,
-      password,
-    });
-    if (!result.ok) {
+    try {
+      const result = await apiClient.post("/register/", {
+        email,
+        username: nickname,
+        password,
+      });
+      if (!result.ok) {
+        return false;
+      }
+      return true;
+    } catch (e) {
       return false;
     }
-    return true;
   }
 }
