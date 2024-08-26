@@ -1237,7 +1237,7 @@ private startGame(playerCount: number): void {
 
 ### **1. 역할**
 
-`Player.ts`는 게임 내의 플레이어 객체를 정의하고, 각 플레이어가 조작할 수 있는 패들(paddle)을 관리하는 클래스입니다. 이 클래스는 플레이어의 조작 키와 패들의 이동을 처리합니다.
+`Player.ts`는 게임 내 플레이어 객체를 정의하고, 플레이어가 조작할 수 있는 패들(paddle)을 관리하는 클래스입니다. 이 클래스는 플레이어의 입력을 받아 패들의 위치를 업데이트하며, 각 플레이어의 조작 키와 패들의 이동 제어를 담당합니다.
 
 ### **2. 주요 클래스 및 메소드**
 
@@ -1247,12 +1247,12 @@ private startGame(playerCount: number): void {
 
 #### **생성자: `constructor(paddle: THREE.Mesh, controlKeys: { moveLeft: string; moveRight: string })`**
 
-- **역할**: 플레이어 객체를 초기화합니다.
+- **역할**: 플레이어 객체를 초기화하고, 패들과 조작 키를 설정합니다.
 - **매개변수**:
   - `paddle`: 플레이어가 조작할 패들을 나타내는 `THREE.Mesh` 객체.
-  - `controlKeys`: 패들의 이동을 제어할 키 정보를 포함하는 객체. 좌우 이동 키를 정의합니다.
+  - `controlKeys`: 패들의 이동을 제어할 키 정보를 포함하는 객체로, 좌우 이동 키를 정의합니다.
 
-#### **정적 메소드: `static getControlKeys()`**
+#### **정적 메소드: `static getDefaultControlKeys()`**
 
 - **역할**: 각 플레이어에 할당된 기본 조작 키를 반환합니다.
 - **반환값**: 각 플레이어에 대한 좌우 이동 키를 정의한 객체.
@@ -1261,41 +1261,41 @@ private startGame(playerCount: number): void {
 
 - **역할**: 플레이어의 입력 상태에 따라 패들의 위치를 업데이트합니다.
 - **매개변수**:
-  - `directionMultiplier`: 패들의 이동 방향을 제어하는 값. 팀에 따라 이동 방향이 달라집니다.
+  - `directionMultiplier`: 패들의 이동 방향을 제어하는 값으로, 팀에 따라 이동 방향이 달라집니다.
   - `moveDistance`: 한 번의 이동에서 패들이 움직일 거리.
   - `playAreaDepth`: 플레이어가 이동할 수 있는 영역의 깊이.
   - `keyState`: 현재 눌려진 키 상태를 나타내는 객체.
 
 ### **3. 동작 원리**
 
-`Player` 클래스는 플레이어가 조작할 패들과 조작 키를 관리합니다. 플레이어의 입력에 따라 패들의 위치를 업데이트하며, 각 플레이어에게 고유한 키 설정을 할당합니다. 이 클래스는 주로 게임 루프 내에서 사용되어 플레이어의 조작에 따라 패들의 위치를 실시간으로 업데이트합니다.
+`Player` 클래스는 플레이어가 조작할 패들과 조작 키를 관리합니다. 사용자의 입력에 따라 패들의 위치를 실시간으로 업데이트하며, 각 플레이어에게 고유한 키 설정을 할당합니다. 이 클래스는 주로 게임 루프 내에서 사용되어, 플레이어의 조작에 따라 패들의 위치를 지속적으로 조정합니다.
 
 ### **4. 추가 정보**
 
-- **THREE.js와의 통합**: `THREE.Mesh` 객체를 사용하여 패들을 3D 공간에서 표현합니다. 이를 통해 게임 내에서 플레이어의 움직임이 시각적으로 표현됩니다.
-- **조작 키의 유연성**: `getControlKeys` 메소드를 통해 각 플레이어의 기본 조작 키를 정의하며, 필요에 따라 수정할 수 있습니다.
+- **THREE.js와의 통합**: `THREE.Mesh` 객체를 사용하여 패들을 3D 공간에서 표현합니다. 이를 통해 게임 내에서 플레이어의 움직임이 실시간으로 시각화됩니다.
+- **조작 키의 유연성**: `getDefaultControlKeys` 메소드를 통해 각 플레이어의 기본 조작 키를 정의하며, 필요에 따라 사용자 정의 키로 쉽게 수정할 수 있습니다.
 
 ### **5. 집중 해설**
 
-#### **5.1 조작 키 반환 메소드**
+#### **5.1 기본 조작 키 반환 메소드**
 
-`getControlKeys` 메소드는 각 플레이어의 기본 조작 키를 반환합니다. 이는 게임 내에서 각 플레이어에게 고유한 키를 할당하는 데 사용됩니다.
+`getDefaultControlKeys` 메소드는 각 플레이어의 기본 조작 키를 반환합니다. 이 메소드를 통해 게임 내 각 플레이어에게 고유한 키를 할당할 수 있습니다.
 
 ```typescript
-static getControlKeys(): {
+static getDefaultControlKeys(): {
 	[playerId: number]: { moveLeft: string; moveRight: string };
 } {
 	return {
-		1: { moveLeft: "a", moveRight: "s" },
-		2: { moveLeft: "f", moveRight: "g" },
-		3: { moveLeft: "j", moveRight: "k" },
-		4: { moveLeft: ";", moveRight: "'" },
+		1: { moveLeft: "ArrowLeft", moveRight: "ArrowRight" },
+		2: { moveLeft: "a", moveRight: "d" },
+		3: { moveLeft: "j", moveRight: "l" },
+		4: { moveLeft: "f", moveRight: "h" },
 	};
 }
 ```
 
 - **구조**: 반환되는 객체는 플레이어 ID를 키로 하여, 각 플레이어의 좌우 이동 키를 정의합니다.
-- **유연성**: 이 메소드는 나중에 조작 키를 커스터마이징하거나 변경할 때 쉽게 수정할 수 있도록 설계되었습니다.
+- **유연성**: 이 메소드는 추후 조작 키를 커스터마이징하거나 변경할 때 쉽게 수정할 수 있도록 설계되었습니다.
 
 #### **5.2 패들 이동 메소드**
 
@@ -1324,11 +1324,11 @@ movePaddle(
 ```
 
 - **이동 로직**: 입력된 키가 눌린 상태(`keyState`)를 확인하여, 패들의 위치를 좌우로 이동시킵니다.
-- **위치 제한**: 패들의 위치는 `playAreaDepth` 값에 따라 제한됩니다. 이를 통해 패들이 게임 영역을 벗어나지 않도록 합니다.
+- **위치 제한**: 패들의 위치는 `playAreaDepth` 값에 따라 제한됩니다. 이를 통해 패들이 게임 영역을 벗어나지 않도록 관리합니다.
 
 ### **요약**
 
-`Player.ts`는 게임 내 플레이어 객체를 정의하고 관리하는 모듈로, 각 플레이어의 패들 위치를 조작 키 입력에 따라 업데이트하는 역할을 합니다. `THREE.js`를 사용하여 패들을 3D 공간에서 표현하며, `getControlKeys` 메소드를 통해 플레이어마다 고유한 조작 키를 설정할 수 있습니다. 이 클래스는 주로 게임 루프 내에서 플레이어의 실시간 입력을 처리하고, 그에 따라 패들의 위치를 조정합니다.
+`Player.ts`는 게임 내 플레이어 객체를 정의하고 관리하는 모듈로, 각 플레이어의 패들 위치를 조작 키 입력에 따라 실시간으로 업데이트하는 역할을 합니다. `THREE.js`를 사용하여 패들을 3D 공간에서 시각화하며, `getDefaultControlKeys` 메소드를 통해 플레이어마다 고유한 조작 키를 설정할 수 있습니다. 이 클래스는 주로 게임 루프 내에서 사용되며, 플레이어의 실시간 입력을 처리하고 그에 따라 패들의 위치를 조정합니다.
 
 ### **GameModule.ts**
 
@@ -1478,21 +1478,11 @@ movePaddle(
 ```typescript
 private moveBall(): void {
     if (this.ball) {
-        // 공의 현재 위치에 현재 속도를 더해 위치를 갱신
+        // 공의 현재 위치에 속도를 더하여 위치 갱신
         this.ball.position.add(this.ballVelocity);
 
-        // X축을 따라 공이 얼마나 진행했는지를 계산
-        let progressX = 0;
-
-        if (this.ballVelocity.x > 0) {
-            // 공이 오른쪽(A팀에서 B팀 방향)으로 이동 중일 때
-            const startX = -this.PADDLE_X_POSITION + this.BALL_RADIUS + this.PADDLE_DIMENSIONS.width / 2;
-            progressX = this.ball.position.x - startX;
-        } else {
-            // 공이 왼쪽(B팀에서 A팀 방향)으로 이동 중일 때
-            const startX = this.PADDLE_X_POSITION - this.BALL_RADIUS - this.PADDLE_DIMENSIONS.width / 2;
-            progressX = startX - this.ball.position.x;
-        }
+        // 공의 이동 진행도를 X축 기준으로 계산
+        let progressX = this.ball.position.x;
 
         // 공의 X 위치에 따라 Y 위치를 맵핑하여 갱신
         this.ball.position.y = this.mapXToY(progressX);
@@ -1503,10 +1493,10 @@ private moveBall(): void {
 }
 ```
 
-- **공의 위치 갱신**: `this.ball.position.add(this.ballVelocity)`는 공의 현재 위치에 현재 속도를 더해 공의 위치를 갱신합니다. `this.ballVelocity`는 `THREE.Vector3` 객체로, X, Y, Z 방향으로 공이 이동하는 벡터를 나타냅니다.
-- **진행 거리 계산**: `progressX`는 공이 시작 위치에서 얼마나 이동했는지를 나타내는 값입니다. 이 값은 공이 현재 어느 팀 방향으로 이동 중인지에 따라 다르게 계산됩니다. 공이 A팀에서 B팀 방향으로 이동 중일 때와 B팀에서 A팀 방향으로 이동 중일 때 각각 다른 `startX`를 기준으로 계산됩니다.
-- **Y축 위치 갱신**: `this.mapXToY(progressX)`는 공의 X축 위치에 따라 Y축 위치를 계산하는 메소드입니다. 이를 통해 공이 X축을 따라 이동할 때 자연스러운 포물선을 그리며 움직이게 됩니다.
-- **벽 충돌 처리**: 마지막으로, `this.handleWallCollisions()`를 호출하여 공이 벽이나 테이블 경계를 벗어났는지 확인하고, 충돌이 발생했을 경우 적절한 처리를 수행합니다.
+- **공의 위치 갱신**: `this.ball.position.add(this.ballVelocity)`를 통해 공의 현재 위치에 속도를 더하여 새로운 위치를 계산합니다. 이 과정에서 공이 실제로 게임 테이블 위에서 움직이는 모습을 구현합니다.
+- **진행도 계산**: 공의 X축 위치(`progressX`)를 기반으로, 현재 공이 게임 테이블 위에서 얼마나 이동했는지를 계산합니다.
+- **Y축 위치 갱신**: `this.mapXToY(progressX)`를 사용하여 공의 X축 위치에 따라 Y축 위치를 업데이트합니다. 이로써 공이 포물선을 그리며 이동하게 됩니다.
+- **벽 충돌 처리**: `this.handleWallCollisions()`를 호출하여 공이 벽이나 테이블 경계를 벗어났는지 확인하고, 필요한 경우 충돌 처리 및 득점 처리를 합니다.
 
 #### **1.2 `checkCollisions()` 메소드**
 
@@ -1521,9 +1511,9 @@ private checkCollisions(): void {
             const paddleX = paddle.position.x;
             const paddleZ = paddle.position.z;
 
-            // 패들 범위 내에서 X축 충돌 여부를 확인
-            const paddleMinX = paddleX - this.BALL_RADIUS / 2 - this.PADDLE_DIMENSIONS.width / 2;
-            const paddleMaxX = paddleX + this.BALL_RADIUS / 2 + this.PADDLE_DIMENSIONS.width / 2;
+            // 패들의 범위 내에서 공의 X축 충돌 여부를 확인
+            const paddleMinX = paddleX - this.PADDLE_DIMENSIONS.width / 2;
+            const paddleMaxX = paddleX + this.PADDLE_DIMENSIONS.width / 2;
 
             if (ballX >= paddleMinX && ballX <= paddleMaxX) {
                 // X축 충돌이 발생한 경우, Z축 충돌 여부 확인
@@ -1531,23 +1521,21 @@ private checkCollisions(): void {
                 const paddleMaxZ = paddleZ + this.PADDLE_DIMENSIONS.depth / 2;
 
                 if (ballZ >= paddleMinZ && ballZ <= paddleMaxZ) {
-                    // 공이 패들 범위 내에 들어온 경우 충돌 처리
+                    // 충돌이 발생한 경우 충돌 처리
                     this.handlePaddleCollision(paddle);
                 }
             }
         });
 
-        // 골이 발생했는지 체크하고 득점 처리
+        // 득점 여부 확인 및 처리
         this.handleGoalScoring();
     }
 }
 ```
 
-- **공과 패들의 충돌 감지**: 이 메소드는 공과 모든 플레이어의 패들 사이의 충돌을 확인합니다. 각각의 패들에 대해, 공의 X축과 Z축 위치가 패들의 X축, Z축 범위 내에 있는지를 확인합니다. 
-- **X축 충돌**: 먼저, 공의 X축 위치(`ballX`)가 패들의 X축 범위(`paddleMinX` ~ `paddleMaxX`) 내에 있는지 확인합니다.
-- **Z축 충돌**: X축 충돌이 감지되면, 공의 Z축 위치(`ballZ`)가 패들의 Z축 범위(`paddleMinZ` ~ `paddleMaxZ`) 내에 있는지를 확인합니다. 
-- **패들과의 충돌 처리**: 충돌이 확인되면, `this.handlePaddleCollision(paddle)`이 호출되어 공의 방향과 속도가 변경됩니다.
-- **골 감지 및 득점 처리**: 마지막으로, `this.handleGoalScoring()`이 호출되어 골이 발생했는지 확인하고, 득점이 발생하면 점수를 갱신합니다.
+- **충돌 감지**: 공과 플레이어의 패들 간의 충돌을 감지합니다. 공의 X축 및 Z축 위치가 패들의 범위 내에 있는지 확인합니다.
+- **충돌 처리**: 충돌이 발생하면 `this.handlePaddleCollision(paddle)` 메소드가 호출되어 공의 속도 및 방향이 변경됩니다.
+- **득점 처리**: 충돌 감지 후, 득점이 발생했는지 확인하고 필요 시 점수를 업데이트합니다.
 
 #### **1.3 `handlePaddleCollision()` 메소드**
 
@@ -1555,9 +1543,9 @@ private checkCollisions(): void {
 private handlePaddleCollision(paddle: THREE.Mesh): void {
     if (this.ball) {
         const targetX = -paddle.position.x; // 반대편으로 이동
-        const targetZ = Math.random() * this.TABLE_DIMENSIONS.depth - this.TABLE_DIMENSIONS.depth / 2;
+        const targetZ = Math.random() * this.PLAY_AREA.depth - this.PLAY_AREA.depth / 2;
 
-        // 패들 위치로 도달할 때의 y축 높이를 맵핑 함수로 계산
+        // 목표 지점의 Y좌표를 맵핑 함수로 계산
         const targetY = this.mapXToY(targetX);
 
         // 목표 지점으로 향하는 방향 벡터 계산
@@ -1570,9 +1558,8 @@ private handlePaddleCollision(paddle: THREE.Mesh): void {
 }
 ```
 
-- **목표 위치 계산**: 공이 패들과 충돌했을 때, 공의 목표 위치(`targetX`, `targetY`, `targetZ`)를 계산합니다. `targetX`는 공이 현재 X축 위치의 반대편으로 이동하도록 설정하고, `targetZ`는 테이블의 깊이 내에서 무작위로 설정됩니다. `targetY`는 `mapXToY`를 통해 X축 위치에 따라 계산된 Y축 위치입니다.
-- **방향 벡터 계산**: 공의 현재 위치에서 목표 위치로 향하는 방향 벡터를 계산하고, 이 벡터를 정규화합니다(`normalize`). 이를 통해 공이 목표 위치로 이동하는 방향과 속도를 결정합니다.
-- **속도 벡터 갱신**: 최종적으로, `this.ballVelocity`를 새로 계산된 방향 벡터로 설정하여 공이 패들에 맞고 반대편으로 이동하도록 합니다.
+- **목표 위치 계산**: 공이 패들과 충돌한 후 반대편으로 이동할 목표 위치를 계산합니다. 이 위치는 패들 위치의 반대편으로 설정됩니다.
+- **방향 벡터 계산**: 공이 이동할 방향 벡터를 계산하고, 속도를 갱신하여 새로운 방향으로 공이 이동하게 합니다.
 
 #### **1.4 `handleWallCollisions()` 메소드**
 
@@ -1580,25 +1567,21 @@ private handlePaddleCollision(paddle: THREE.Mesh): void {
 private handleWallCollisions(): void {
     if (this.ball) {
         if (
-            Math.abs(this.ball.position.z) > this.PLAY_AREA.depth / 2 || // 옆면에 도달
+            Math.abs(this.ball.position.z) > this.PLAY_AREA.depth / 2 || // 측면 벽에 도달
             Math.abs(this.ball.position.x) > this.PLAY_AREA.width / 2 // 테이블 끝에 도달
         ) {
-            // 플레이 구역을 벗어나면 득점 처리 및 라운드 리셋
+            // 득점 처리 및 라운드 리셋
             if (this.ball.position.x > this.PLAY_AREA.width / 2) {
-                this.updateScore("A"); // B팀의 골대에 공이 들어갔으므로 A팀 득점
+                this.updateScore("A"); // B팀의 골대에 공이 들어감, A팀 득점
             } else if (this.ball.position.x < -this.PLAY_AREA.width / 2) {
-                this.updateScore("B"); // A팀의 골대에 공이 들어갔으므로 B팀 득점
+                this.updateScore("B"); // A팀의 골대에 공이 들어감, B팀 득점
             }
         }
     }
 }
 ```
 
-- **공이 테이블 끝이나 벽에 도달했는지 확인**: 이 메소드는 공의 위치가 플레이 가능한 영역을 벗어났는지 확인합니다. 
-  - `this.ball.position.z`가 플레이 영역의 깊이를 벗어났을 때(공이 테이블의 옆면에 도달) 또는 `this.ball.position.x`가 플레이 영역의 너비를 벗어났을 때(공이 테이블의 끝에 도달) 충돌이 발생했다고 판단합니다.
-- **득점 처리**: 충돌이 발생하면, 공의 X축 위치에 따라 어느 팀이 득점했는지 결정합니다. 
-  - 공이 오른쪽(B팀의 골대 방향)으로 벗어나면 A팀이 득점하며, 반대로 왼쪽(A팀의 골대 방향)으로 벗어나면 B팀이 득점합니다.
-- **점수 갱신**: 득점이 발생하면 `this.updateScore(team)` 메소드를 호출하여 해당 팀의 점수를 갱신하고, 라운드를 리셋합니다.
+- **벽 충돌 감지 및 처리**: 공이 게임 테이블의 측면 또는 끝에 도달했는지 확인하고, 충돌이 발생했을 경우 적절한 득점 처리를 합니다.
 
 ---
 
@@ -1607,9 +1590,7 @@ private handleWallCollisions(): void {
 #### **2.1 `updateScore()` 메소드**
 
 ```typescript
-private updateScore(team
-
-: "A" | "B"): void {
+private updateScore(team: "A" | "B"): void {
     if (team === "A") {
         this.scoreA++;
     } else {
@@ -1622,33 +1603,18 @@ private updateScore(team
 }
 ```
 
-- **점수 업데이트**: 이 메소드는 득점이 발생했을 때 호출됩니다. `team` 인자에 따라 A팀이나 B팀의 점수를 1점씩 증가시킵니다.
-- **점수 콜백**: 점수가 갱신된 후, `this.scoreCallback`이 설정되어 있으면 콜백을 호출하여 UI 또는 다른 게임 로직에서 점수를 반영할 수 있도록 합니다.
+- **점수 업데이트**: 공이 어느 팀의 골대에 들어갔는지 확인하고, 해당 팀의 점수를 증가시킵니다. 
+- **점수 콜백**: 점수가 갱신되면 콜백을 호출하여 점수 업데이트를 UI 등에 반영합니다.
 
-#### **2.2 `isGoalScored()` 메소드**
-
-```typescript
-private isGoalScored(): boolean {
-    if (this.ball) {
-        return Math.abs(this.ball.position.x) > this.PLAY_AREA.width / 2;
-    }
-    return false;
-}
-```
-
-- **골 감지**: 이 메소드는 공이 플레이 가능한 영역을 벗어나 득점이 발생했는지 확인합니다. 
-  - 공의 X축 위치(`this.ball.position.x`)가 플레이 영역의 너비를 벗어났다면 골이 발생한 것으로 간주하고 `true`를 반환합니다.
-  - 그렇지 않다면 `false`를 반환합니다.
-
-#### **2.3 `resetRound()` 메소드**
+#### **2.2 `resetRound()` 메소드**
 
 ```typescript
 private resetRound(): void {
-    // 공의 위치 초기화
+    // 공 위치 초기화
     if (this.ball) {
         this.ball.position.set(0, this.mapXToY(0), 0);
 
-        // x축 속도의 방향을 랜덤하게 결정 (A팀 방향 또는 B팀 방향)
+        // x축 속도의 방향을 랜덤하게 결정
         const randomDirection = Math.random() < 0.5 ? -1 : 1;
 
         this.ballVelocity.set(0.1 * randomDirection, 0, 0);
@@ -1667,9 +1633,7 @@ private resetRound(): void {
 }
 ```
 
-- **공의 위치 초기화**: 득점이 발생한 후 라운드를 리셋하는 메소드입니다. 
-  - 공의 위치를 초기화하여 게임의 중앙에 배치하고, X축 속도를 랜덤하게 설정합니다. 이를 통해 공이 A팀 또는 B팀 방향으로 다시 움직이게 됩니다.
-- **패들 위치 초기화**: 각 플레이어의 패들 위치도 초기화하여, 각 팀의 시작 위치로 되돌립니다. 패들은 초기 위치에서 다시 움직일 준비를 합니다.
+- **공 및 패들 위치 초기화**: 득점 후 라운드를 리셋하고, 공과 패들의 위치를 초기 상태로 재설정합니다.
 
 ---
 
@@ -1693,10 +1657,7 @@ private movePaddles(): void {
 }
 ```
 
-- **플레이어 패들 이동**: 이 메소드는 각 플레이어의 패들을 이동시키는 로직을 처리합니다. 
-  - 플레이어는 `this.players` 배열에 저장되어 있으며, 각 플레이어의 패들은 `Player` 객체를 통해 관리됩니다.
-- **이동 방향 설정**: 각 팀의 패들이 이동하는 방향을 결정하는 `directionMultiplier`는 팀에 따라 달라집니다. 팀 A는 오른쪽(B팀 방향)으로 이동하므로 `1`을 사용하고, 팀 B는 왼쪽(A팀 방향)으로 이동하므로 `-1`을 사용합니다.
-- **패들 이동**: `Player` 객체의 `movePaddle` 메소드를 호출하여 패들을 실제로 이동시킵니다. 이때, 이동할 거리(`this.PADDLE_MOVE_DISTANCE * 0.1`), 플레이 가능한 깊이(`this.PLAY_AREA.depth`), 그리고 현재 키 상태(`this.keyState`)가 인자로 전달됩니다.
+- **패들 이동 처리**: 각 플레이어의 패들이 입력된 키 상태에 따라 이동하도록 설정합니다. 팀에 따라 이동 방향을 결정하고, 각 플레이어의 패들을 이동시킵니다.
 
 ---
 
@@ -1706,25 +1667,27 @@ private movePaddles(): void {
 
 ```typescript
 private mapXToY(x: number): number {
-    // H 계산
+    // 높이 계산
     const H =
         this.PADDLE_Y_POSITION -
         (this.TABLE_POSITION.y + this.TABLE_DIMENSIONS.height + this.BALL_RADIUS);
 
-    // L 계산
+    // 길이 계산
     const L =
         (this.PADDLE_X_POSITION -
             this.PADDLE_DIMENSIONS.width / 2 -
             this.BALL_RADIUS) /
         1.5;
 
-    // 패들의 Y좌표를 기준으로 보정
+    // 패들 Y좌표 기준으로 보정
     const paddleY = this.PADDLE_Y_POSITION;
 
-    // x값을 2L을 기준으로 대칭 변환
+    // X값 대칭 변환
+
+
     const adjustedX = 2 * L - Math.abs(2 * L - x);
 
-    // 포물선 식 y = -(H / 2L^2) * x(x - L) 적용
+    // 포물선 식 적용
     const y = -(H / (2 * L * L)) * adjustedX * (adjustedX - L);
 
     // 실제 Y 좌표로 보정
@@ -1732,12 +1695,7 @@ private mapXToY(x: number): number {
 }
 ```
 
-- **포물선의 Y 좌표 계산**: 이 메소드는 공의 X축 위치를 받아, 해당 위치에서의 Y축 위치를 계산하여 반환합니다. 공이 X축을 따라 이동할 때, Y축에서 포물선 형태로 움직이게 하기 위해 사용됩니다.
-- **높이(H) 계산**: 공이 포물선의 최고점에서 시작해서 점차 내려오도록 하기 위해, 공이 시작할 때의 Y축 위치와 테이블의 높이 및 공의 반지름을 기반으로 H 값을 계산합니다.
-- **길이(L) 계산**: X축 방향으로 이동할 수 있는 최대 거리를 계산합니다. 이 거리는 공이 패들로부터 얼마나 멀리 이동할 수 있는지를 결정합니다.
-- **X값 대칭 변환**: 포물선을 대칭으로 만들어주기 위해 X값을 변환합니다. 이는 공이 양쪽 끝으로 이동할 때 같은 패턴으로 움직이게 만듭니다.
-- **포물선 공식 적용**: 변환된 X값을 이용하여 포물선 공식을 적용하고, Y축 좌표를 계산합니다. 이 좌표는 공이 X축 위치에 따라 위아래로 얼마나 움직여야 하는지를 결정합니다.
-- **Y좌표 보정**: 마지막으로, 계산된 Y축 좌표를 공의 기본 Y축 위치(paddleY)로 보정하여 실제 게임에서 공의 Y축 위치를 반환합니다.
+- **포물선 형태의 Y 좌표 계산**: 공의 X축 위치에 따라 Y축 위치를 포물선 형태로 계산하여 반환합니다. 이를 통해 공이 자연스럽게 곡선을 그리며 이동하도록 구현합니다.
 
 ---
 
@@ -1760,10 +1718,7 @@ private render(): void {
 }
 ```
 
-- **두 개의 카메라 시점 설정**: 이 메소드는 화면을 두 개의 시점으로 나누어 렌더링합니다. 
-  - 첫 번째 시점(`cameraA`)은 A팀의 관점에서 게임을 렌더링하며, 두 번째 시점(`cameraB`)은 B팀의 관점에서 렌더링합니다.
-- **뷰포트 설정**: `this.renderer.setScissor`와 `this.renderer.setViewport`를 사용하여 화면을 절반으로 나누어, 각 절반에 해당하는 시점에서 렌더링을 수행합니다.
-- **렌더링**: 각 카메라에서의 시점을 기반으로, `this.renderer.render`를 호출하여 현재 장면(`this.scene`)을 화면에 렌더링합니다.
+- **화면 분할 렌더링**: 두 개의 카메라 시점을 화면에 분할하여 렌더링합니다. A팀과 B팀 각각의 시점이 화면의 절반씩 차지하도록 설정됩니다.
 
 ---
 
@@ -1778,24 +1733,19 @@ private addEventListeners(): void {
 }
 ```
 
-- **이벤트 리스너 추가**: 이 메소드는 키보드 입력을 처리하기 위해 `keydown`과 `keyup` 이벤트 리스너를 추가합니다. 
-  - `keydown` 이벤트는 키가 눌렸을 때 호출되며, `handleKeyDown` 메소드로 연결됩니다.
-  - `keyup` 이벤트는 키에서 손을 뗐을 때 호출되며, `handleKeyUp` 메소드로 연결됩니다.
+- **이벤트 리스너 추가**: 키보드 입력을 처리하기 위해 `keydown` 및 `keyup` 이벤트 리스너를 추가합니다. 사용자의 키 입력 상태를 추적하기 위함입니다.
 
 #### **`removeEventListeners()` 메소드**
 
 ```typescript
 public removeEventListeners(): void {
-    window.removeEventListener("keydown", this.handle
-
-KeyDown);
+    window.removeEventListener("keydown", this.handleKeyDown);
     window.removeEventListener("keyup", this.handleKeyUp);
     window.removeEventListener("resize", this.onWindowResize);
 }
 ```
 
-- **이벤트 리스너 제거**: 객체가 소멸되거나 게임이 종료될 때, 메모리 누수를 방지하기 위해 모든 이벤트 리스너를 제거합니다. 
-  - `keydown`, `keyup`, `resize` 이벤트에 대한 리스너를 제거합니다.
+- **이벤트 리스너 제거**: 객체가 소멸되거나 게임이 종료될 때 모든 이벤트 리스너를 제거하여 메모리 누수를 방지합니다.
 
 #### **`handleKeyDown()` 및 `handleKeyUp()` 메소드**
 
@@ -1809,6 +1759,4 @@ private handleKeyUp = (event: KeyboardEvent) => {
 };
 ```
 
-- **키 상태 관리**: 이 두 메소드는 키보드 입력을 처리하고, 현재 눌려진 키의 상태를 `this.keyState` 객체에 저장합니다.
-  - `keydown` 이벤트가 발생하면 해당 키가 눌린 상태로(`true`), `keyup` 이벤트가 발생하면 키가 눌리지 않은 상태로(`false`) 기록됩니다.
-  - 이 상태는 `movePaddles` 메소드에서 패들 이동을 처리할 때 사용됩니다.
+- **키 상태 관리**: `keydown` 및 `keyup` 이벤트에 따라 키 상태를 업데이트하여 현재 어떤 키가 눌려있는지를 추적합니다. 이를 통해 패들의 이동을 제어합니다.

@@ -267,6 +267,39 @@ export default class GameModule {
 		);
 		net.castShadow = true;
 		this.scene.add(net);
+
+		// 벽
+		const wallThickness = 0.2;
+		const wallHeight = this.PADDLE_Y_POSITION - this.TABLE_POSITION.y;
+		const wallGeometry = new THREE.BoxGeometry(
+			this.TABLE_DIMENSIONS.width * 1.35,
+			wallHeight,
+			wallThickness
+		);
+		const wallMaterial = new THREE.MeshStandardMaterial({
+			color: 0x333333,
+			roughness: 1.0,
+		});
+
+		// 왼쪽 벽
+		const leftWall = new THREE.Mesh(wallGeometry, wallMaterial);
+		leftWall.position.set(
+			0,
+			(this.TABLE_POSITION.y + this.PADDLE_Y_POSITION) / 2,
+			-this.TABLE_DIMENSIONS.depth / 2 - wallThickness / 2
+		);
+		leftWall.castShadow = true;
+		this.scene.add(leftWall);
+
+		// 오른쪽 벽
+		const rightWall = new THREE.Mesh(wallGeometry, wallMaterial);
+		rightWall.position.set(
+			0,
+			(this.TABLE_POSITION.y + this.PADDLE_Y_POSITION) / 2,
+			this.TABLE_DIMENSIONS.depth / 2 + wallThickness / 2
+		);
+		rightWall.castShadow = true;
+		this.scene.add(rightWall);
 	}
 
 	private setupPlayers(): void {
@@ -442,6 +475,10 @@ export default class GameModule {
 
 	private handleWallCollisions(): void {
 		if (this.ball) {
+			if (Math.abs(this.ball.position.z) > this.TABLE_DIMENSIONS.depth / 2) {
+				this.ballVelocity.z *= -1;
+			}
+
 			if (
 				Math.abs(this.ball.position.z) > this.PLAY_AREA.depth / 2 ||
 				Math.abs(this.ball.position.x) > this.PLAY_AREA.width / 2
@@ -457,10 +494,22 @@ export default class GameModule {
 
 	private handlePaddleCollision(paddle: THREE.Mesh): void {
 		if (this.ball) {
-			const targetX = -paddle.position.x;
+			// const targetX = -paddle.position.x;
+
+			// const targetZ =
+			// 	Math.random() * this.TABLE_DIMENSIONS.depth -
+			// 	this.TABLE_DIMENSIONS.depth / 2;
+
+			const directionMultiplier = paddle.position.x < 0 ? 1 : -1;
+
 			const targetZ =
-				Math.random() * this.TABLE_DIMENSIONS.depth -
-				this.TABLE_DIMENSIONS.depth / 2;
+				Math.random() * (this.PLAY_AREA.depth - 2 * this.BALL_RADIUS) -
+				(this.PLAY_AREA.depth - this.BALL_RADIUS) / 2;
+
+			const targetX =
+				(directionMultiplier *
+					(this.PADDLE_DIMENSIONS.width - this.BALL_RADIUS)) /
+				2;
 
 			const targetY = this.mapXToY(targetX);
 
@@ -528,6 +577,7 @@ export default class GameModule {
 	}
 
 	private mapXToY(x: number): number {
+
 		// H 계산
 		const H =
 			this.PADDLE_Y_POSITION -

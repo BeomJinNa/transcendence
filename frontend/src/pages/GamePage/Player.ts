@@ -29,17 +29,16 @@ export class Player {
 		playAreaDepth: number,
 		keyState: { [key: string]: boolean }
 	): void {
+		const minZ = -playAreaDepth / 2;
+		const maxZ = playAreaDepth / 2;
+
 		if (keyState[this.controlKeys.moveLeft]) {
-			this.paddle.position.z = Math.max(
-				this.paddle.position.z - moveDistance * directionMultiplier,
-				-playAreaDepth / 2
-			);
+			const newZ = this.paddle.position.z - moveDistance * directionMultiplier;
+			this.paddle.position.z = Math.max(Math.min(newZ, maxZ), minZ);
 		}
 		if (keyState[this.controlKeys.moveRight]) {
-			this.paddle.position.z = Math.min(
-				this.paddle.position.z + moveDistance * directionMultiplier,
-				playAreaDepth / 2
-			);
+			const newZ = this.paddle.position.z + moveDistance * directionMultiplier;
+			this.paddle.position.z = Math.max(Math.min(newZ, maxZ), minZ);
 		}
 	}
 }
