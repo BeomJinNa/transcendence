@@ -64,6 +64,7 @@ export default class LoginPage {
       const result = await apiClient.post("/login/", {
         username: username,
         password,
+        baseurl: window.location.origin,
       });
 
       if (result.status === 200) {

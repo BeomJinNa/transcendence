@@ -24,7 +24,7 @@ class ApiClient {
       "Content-Type": "application/json",
     };
 
-    const token = localStorage.getItem("authToken");
+    const token = this.authService?.getAccessToken();
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
@@ -65,7 +65,7 @@ class ApiClient {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return response.json();
+    return response;
   }
 
   public get(url: string, params?: object) {

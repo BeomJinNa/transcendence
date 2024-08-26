@@ -7,11 +7,11 @@ export default class TwoFactorAuthProvider implements AuthProvider {
     try {
       result = await apiClient.post("/verify/", { token: login_token });
     } catch (e) {
-      alert("서비스가 실행중이지 않습니다. 다시 확인해주세요.");
       return false;
     }
-    localStorage.setItem("access_token", result.access_token);
-    localStorage.setItem("refresh_token", result.refresh_token);
+    const responseBody = await result.json();
+    localStorage.setItem("access_token", responseBody.access_token);
+    localStorage.setItem("refresh_token", responseBody.refresh_token);
     return true;
   }
   logout(): void {
