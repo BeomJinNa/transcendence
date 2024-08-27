@@ -4,6 +4,36 @@ import { createFormGroup, createButton } from "./formUtils";
 import Router from "../routes/Router";
 import { apiClient } from "../api/ApiClient";
 
+function requestLogin(code: string) {
+  console.log('TODO : implement requestLogin in LoginPage.ts');
+  console.log('How to : send code to server');
+  // apiClient.post('/login', { code: code });
+  console.log(code);
+}
+
+window.addEventListener(
+  "message",
+  (event) => {
+    const code = event.data.code;
+    requestLogin(code);
+  },
+  false,
+);
+
+function openPopup() {
+  const authUrl = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-20882ed4d4fc21b4e8d887c98605a3938b6f22bb038688bdd74c25a676519018&redirect_uri=http%3A%2F%2Flocalhost%2Flogin&response_type=code';
+  const popup = window.open(
+      authUrl,
+      'socialLoginPopup',
+      'width=600,height=700'
+  );
+
+  if (!popup) {
+      window.location.href = authUrl;
+      return;
+  }
+}
+
 export default class LoginPage {
 	public render(): HTMLElement {
 		const container = document.createElement("div");
@@ -34,6 +64,19 @@ export default class LoginPage {
 			container.appendChild(loading);
 			return container;
 		}
+    const code = urlParams.get("code");
+    if (code) {
+      if (window.opener !== null) {
+        // 메인 페이지로 코드 전달
+        window.opener.postMessage({ code }, '*');
+        // 팝업 창 닫기
+        window.close();
+      }
+      else {
+        requestLogin(code);
+      }
+      return container;
+    }
 
 		const heading = document.createElement("h1");
 		heading.textContent = I18n.t("loginPageTitle");
@@ -45,6 +88,16 @@ export default class LoginPage {
 
 		form.appendChild(this.createBackButton());
 		container.appendChild(form);
+
+    const socialLoginButton = document.createElement('div');
+    socialLoginButton.textContent = I18n.t("42");
+    socialLoginButton.addEventListener('click', function() {
+        openPopup();
+        const waitdiv = document.createElement('div');
+        waitdiv.textContent = 'waiting...';
+        container.appendChild(waitdiv);
+    });
+    container.appendChild(socialLoginButton);
 
 		return container;
 	}
