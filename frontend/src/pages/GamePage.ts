@@ -9,25 +9,30 @@ export default class GamePage {
 	private scoreDisplay: HTMLElement | null = null;
 
 	public render(): HTMLElement {
-		console.log("GamePage: render called");
-
 		const container = document.createElement("div");
 
+		container.classList.add(
+			"container",
+			"mt-5",
+			"d-flex",
+			"flex-column",
+			"justify-content-center",
+			"min-vh-100",
+			"text-center"
+		);
+
 		const playerCount = sessionStorage.getItem("playerCount");
-		console.log("GamePage: playerCount from sessionStorage =", playerCount);
 
 		if (!playerCount) {
-			console.log("GamePage: No player count, showing settings");
 			const settings = new GameSettings();
 			container.appendChild(settings.render());
 			container.appendChild(this.createBackButton());
 		} else {
-			console.log("GamePage: Player count found, starting game");
 			this.startGame(parseInt(playerCount, 10));
 			const gameArea = this.createGameArea();
 			container.appendChild(gameArea);
 
-			this.createGameUI(container);
+			this.createGameUI(gameArea);
 
 			container.appendChild(this.createBackButton());
 		}
@@ -38,9 +43,15 @@ export default class GamePage {
 	private createGameArea(): HTMLElement {
 		const gameArea = document.createElement("div");
 		gameArea.id = "gameArea";
+		gameArea.classList.add(
+			"mt-4",
+			"position-relative",
+			"d-flex",
+			"justify-content-center",
+			"align-items-center"
+		);
 
 		if (this.gameModule) {
-			console.log("GamePage: Adding game module to gameArea");
 			gameArea.appendChild(this.gameModule.getElement());
 		}
 
@@ -49,21 +60,22 @@ export default class GamePage {
 
 	private createGameUI(container: HTMLElement): void {
 		const gameUI = document.createElement("div");
-		gameUI.style.position = "absolute";
-		gameUI.style.top = "2vh";
-		gameUI.style.width = "100%";
-		gameUI.style.textAlign = "center";
-		gameUI.style.color = "#ffffff";
+		gameUI.classList.add(
+			"position-absolute",
+			"top-0",
+			"start-50",
+			"translate-middle-x",
+			"text-white"
+		);
 
 		if (this.gameModule) {
 			const instructions = document.createElement("div");
-			instructions.style.fontSize = "2vh";
+			instructions.classList.add("h6", "mt-3");
 			instructions.innerHTML = this.gameModule.getControlInstructions();
 			gameUI.appendChild(instructions);
 
 			this.scoreDisplay = document.createElement("div");
-			this.scoreDisplay.style.marginTop = "2vh";
-			this.scoreDisplay.style.fontSize = "3vh";
+			this.scoreDisplay.classList.add("h4", "mt-2");
 			this.scoreDisplay.innerHTML = `0 : 0`;
 			gameUI.appendChild(this.scoreDisplay);
 		}
@@ -72,8 +84,6 @@ export default class GamePage {
 	}
 
 	private startGame(playerCount: number): void {
-		console.log("GamePage: Starting game with playerCount =", playerCount);
-
 		this.gameModule = new GameModule(playerCount);
 
 		this.gameModule.setScoreCallback((scoreA: number, scoreB: number) => {
@@ -81,25 +91,21 @@ export default class GamePage {
 				this.scoreDisplay.innerHTML = `${scoreA} : ${scoreB}`;
 			}
 		});
-
-		console.log(
-			"GamePage: Game module created with settings for",
-			playerCount,
-			"players"
-		);
 	}
 
 	private createBackButton(): HTMLElement {
-		return createButton(I18n.t("backToMainButton"), () => {
-			console.log("GamePage: Back button clicked");
+		const backButtonWrapper = document.createElement("div");
+		const backButton = createButton(I18n.t("backToMainButton"), () => {
 			this.endGame();
 			Router.getInstance().navigateTo("/");
 		});
+		backButton.classList.add("btn", "btn-secondary", "mt-4", "w-25");
+
+		backButtonWrapper.appendChild(backButton);
+		return backButtonWrapper;
 	}
 
 	private endGame(): void {
-		console.log("GamePage: Ending game and clearing state");
-
 		if (this.gameModule) {
 			this.gameModule.stopAnimation();
 			this.gameModule.removeEventListeners();

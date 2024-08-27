@@ -15,6 +15,10 @@ frontend/certs:
 re-prod:
 	make clean-prod; make prod
 
+re-prod-front:
+	docker compose -f docker-compose.prod.yml down --remove-orphans frontend
+	docker compose -f docker-compose.prod.yml up -d --build frontend
+
 re-dev:
 	make clean-dev; make dev
 

@@ -4,61 +4,83 @@ import { createFormGroup, createButton } from "./formUtils";
 import Router from "../routes/Router";
 
 export default class SignupPage {
-  public render(): HTMLElement {
-    const container = document.createElement("div");
+	public render(): HTMLElement {
+		const container = document.createElement("div");
+		container.classList.add(
+			"container",
+			"mt-5",
+			"d-flex",
+			"flex-column",
+			"justify-content-center",
+			"min-vh-100",
+			"text-center"
+		);
+		const heading = document.createElement("h1");
+		heading.textContent = I18n.t("signupPageTitle");
+		heading.classList.add("text-center", "mb-4");
+		container.appendChild(heading);
 
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "/css/SignupPage.css";
-    document.head.appendChild(link);
+		const form = this.createSignupForm();
+		form.classList.add("w-50", "mx-auto");
+		form.appendChild(this.createBackButton());
+		container.appendChild(form);
 
-    const heading = document.createElement("h1");
-    heading.textContent = I18n.t("signupPageTitle");
-    container.appendChild(heading);
+		return container;
+	}
 
-    const form = this.createSignupForm();
-    container.appendChild(form);
+	private createSignupForm(): HTMLElement {
+		const form = document.createElement("form");
 
-    return container;
-  }
+		const usernameGroup = createFormGroup(I18n.t("nicknameLabel"), "username");
+		const passwordGroup = createFormGroup(I18n.t("passwordLabel"), "password");
+		const emailGroup = createFormGroup(I18n.t("emailLabel"), "email");
 
-  private createSignupForm(): HTMLElement {
-    const form = document.createElement("form");
+		const submitButton = createButton(I18n.t("signupButton"), async () => {
+			const username = (
+				form.querySelector('input[type="username"]') as HTMLInputElement
+			).value;
+			const password = (
+				form.querySelector('input[type="password"]') as HTMLInputElement
+			).value;
+			const email = (
+				form.querySelector('input[type="email"]') as HTMLInputElement
+			).value;
 
-    const usernameGroup = createFormGroup(I18n.t("nicknameLabel"), "username");
-    const passwordGroup = createFormGroup(I18n.t("passwordLabel"), "password");
-    const emailGroup = createFormGroup(I18n.t("emailLabel"), "email");
+			const success = await AuthService.getInstance().signup(
+				email,
+				password,
+				username
+			);
 
-    const submitButton = createButton(I18n.t("signupButton"), async () => {
-      const username = (
-        form.querySelector('input[type="username"]') as HTMLInputElement
-      ).value;
-      const password = (
-        form.querySelector('input[type="password"]') as HTMLInputElement
-      ).value;
-      const email = (
-        form.querySelector('input[type="email"]') as HTMLInputElement
-      ).value;
+			if (success) {
+				alert(I18n.t("signupSuccess"));
+				Router.getInstance().navigateTo("/login");
+			} else {
+				alert(I18n.t("signupFailed"));
+			}
+		});
 
-      const success = await AuthService.getInstance().signup(
-        email,
-        password,
-        username
-      );
+		usernameGroup.classList.add("mb-3");
+		passwordGroup.classList.add("mb-3");
+		emailGroup.classList.add("mb-3");
+		submitButton.classList.add("btn", "btn-primary", "w-50");
 
-      if (success) {
-        alert(I18n.t("signupSuccess"));
-        Router.getInstance().navigateTo("/login");
-      } else {
-        alert(I18n.t("signupFailed"));
-      }
-    });
+		form.appendChild(usernameGroup);
+		form.appendChild(emailGroup);
+		form.appendChild(passwordGroup);
+		form.appendChild(submitButton);
 
-    form.appendChild(usernameGroup);
-    form.appendChild(emailGroup);
-    form.appendChild(passwordGroup);
-    form.appendChild(submitButton);
+		return form;
+	}
 
-    return form;
-  }
+	private createBackButton(): HTMLElement {
+		const backButtonWrapper = document.createElement("div");
+		const backButton = createButton(I18n.t("backToMainButton"), () => {
+			Router.getInstance().navigateTo("/");
+		});
+		backButton.classList.add("btn", "btn-secondary", "mt-4", "w-50");
+
+		backButtonWrapper.appendChild(backButton);
+		return backButtonWrapper;
+	}
 }

@@ -6,27 +6,58 @@ import Router from "../routes/Router";
 export default class MainPage {
 	public render(): HTMLElement {
 		const container = document.createElement("div");
-
-		const link = document.createElement("link");
-		link.rel = "stylesheet";
-		link.href = "/css/MainPage.css";
-		document.head.appendChild(link);
-
+		container.classList.add(
+			"container",
+			"mt-5",
+			"d-flex",
+			"flex-column",
+			"justify-content-center",
+			"min-vh-100",
+			"text-center"
+		);
 		const heading = document.createElement("h1");
 		heading.textContent = I18n.t("mainPageTitle");
+		heading.classList.add("text-center", "mb-4");
+
 		container.appendChild(heading);
 
-		container.appendChild(this.createLanguageSelector());
+		const languageSelectorWrapper = document.createElement("div");
+		languageSelectorWrapper.classList.add(
+			"d-flex",
+			"justify-content-center",
+			"mb-3"
+		);
+
+		const languageSelector = this.createLanguageSelector();
+		languageSelector.classList.add("form-select", "w-25");
+
+		languageSelectorWrapper.appendChild(languageSelector);
+		container.appendChild(languageSelectorWrapper);
 
 		const isAuthenticated = AuthService.getInstance().isAuthenticated();
 
+		const buttonGroup = document.createElement("div");
+		buttonGroup.classList.add("d-flex", "justify-content-center", "gap-2");
+
 		if (!isAuthenticated) {
-			container.appendChild(createLink("/login", I18n.t("login")));
-			container.appendChild(createLink("/signup", I18n.t("signup")));
+			const loginLink = createLink("/login", I18n.t("login"));
+			loginLink.classList.add("btn", "btn-primary");
+			buttonGroup.appendChild(loginLink);
+
+			const signupLink = createLink("/signup", I18n.t("signup"));
+			signupLink.classList.add("btn", "btn-secondary");
+			buttonGroup.appendChild(signupLink);
 		} else {
-			container.appendChild(createLink("/game", I18n.t("game")));
-			container.appendChild(this.createLogoutButton());
+			const gameLink = createLink("/game", I18n.t("game"));
+			gameLink.classList.add("btn", "btn-success");
+			buttonGroup.appendChild(gameLink);
+
+			const logoutButton = this.createLogoutButton();
+			logoutButton.classList.add("btn", "btn-danger");
+			buttonGroup.appendChild(logoutButton);
 		}
+
+		container.appendChild(buttonGroup);
 
 		return container;
 	}
