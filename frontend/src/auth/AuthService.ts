@@ -40,14 +40,6 @@ export default class AuthService {
 	getUser(): { email: string; nickname: string } | null {
 		return this.provider.getUser();
 	}
-
-	async signup(
-		email: string,
-		password: string,
-		nickname: string
-	): Promise<boolean> {
-		return await this.provider.signup(email, password, nickname);
-	}
 }
 
 //이후 const authService = new AuthService(new AuthProvider()); 형태로 필요한 AuthProvider를 결합해서 호출이 가능

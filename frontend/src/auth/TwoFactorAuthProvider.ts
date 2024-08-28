@@ -1,4 +1,4 @@
-import ApiClient, { apiClient } from "../api/ApiClient";
+import { apiClient } from "../api/ApiClient";
 import AuthProvider from "./AuthProvider";
 
 export default class TwoFactorAuthProvider implements AuthProvider {
@@ -43,24 +43,5 @@ export default class TwoFactorAuthProvider implements AuthProvider {
   }
   getUser(): { email: string; nickname: string } | null {
     throw new Error("Method not implemented.");
-  }
-  async signup(
-    email: string,
-    nickname: string,
-    password: string
-  ): Promise<boolean> {
-    try {
-      const result = await apiClient.post("/register/", {
-        email,
-        username: nickname,
-        password,
-      });
-      if (!result.ok) {
-        return false;
-      }
-      return true;
-    } catch (e) {
-      return false;
-    }
   }
 }

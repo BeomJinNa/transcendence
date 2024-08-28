@@ -1,6 +1,6 @@
 import I18n from "../localization/I18n";
 import AuthService from "../auth/AuthService";
-import { createFormGroup, createButton } from "./formUtils";
+import { createButton } from "./formUtils";
 import Router from "../routes/Router";
 import { apiClient } from "../api/ApiClient";
 import { OAUTH_42_CLIENT_ID } from "../constants";
@@ -71,62 +71,15 @@ export default class LoginPage {
     heading.classList.add("text-center", "mb-4");
     container.appendChild(heading);
 
-    const form = this.createLoginForm();
-    form.classList.add("w-50", "mx-auto");
-
-    form.appendChild(this.createBackButton());
-    container.appendChild(form);
-
     const socialLoginButton = document.createElement("div");
     socialLoginButton.textContent = I18n.t("42");
     socialLoginButton.addEventListener("click", () => {
       this.openOauth2Popup();
     });
+    socialLoginButton.classList.add("btn", "btn-primary", "w-50", "mt-4");
     container.appendChild(socialLoginButton);
 
     return container;
-  }
-
-  private createLoginForm(): HTMLElement {
-    const form = document.createElement("form");
-
-    const usernameGroup = createFormGroup(I18n.t("nicknameLabel"), "username");
-    const passwordGroup = createFormGroup(I18n.t("passwordLabel"), "password");
-
-    const submitButton = createButton(I18n.t("loginButton"), async () => {
-      const username = (
-        form.querySelector('input[type="username"]') as HTMLInputElement
-      ).value;
-      const password = (
-        form.querySelector('input[type="password"]') as HTMLInputElement
-      ).value;
-
-      try {
-        const result = await apiClient.post("/login/", {
-          username: username,
-          password,
-          baseurl: window.location.origin,
-        });
-        if (result.status === 200) {
-          alert(I18n.t("loginSuccess"));
-          Router.getInstance().navigateTo("/");
-        } else {
-          alert(I18n.t("loginFailed"));
-        }
-      } catch (e) {
-        alert(I18n.t("loginFailed"));
-      }
-    });
-
-    usernameGroup.classList.add("mb-3");
-    passwordGroup.classList.add("mb-3");
-    submitButton.classList.add("btn", "btn-primary", "w-50");
-
-    form.appendChild(usernameGroup);
-    form.appendChild(passwordGroup);
-    form.appendChild(submitButton);
-
-    return form;
   }
 
   private createBackButton(): HTMLElement {

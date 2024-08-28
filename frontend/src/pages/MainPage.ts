@@ -43,10 +43,6 @@ export default class MainPage {
 			const loginLink = createLink("/login", I18n.t("login"));
 			loginLink.classList.add("btn", "btn-primary");
 			buttonGroup.appendChild(loginLink);
-
-			const signupLink = createLink("/signup", I18n.t("signup"));
-			signupLink.classList.add("btn", "btn-secondary");
-			buttonGroup.appendChild(signupLink);
 		} else {
 			const gameLink = createLink("/game", I18n.t("game"));
 			gameLink.classList.add("btn", "btn-success");

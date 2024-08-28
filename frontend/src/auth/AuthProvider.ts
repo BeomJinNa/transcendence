@@ -5,7 +5,6 @@ interface AuthProvider {
 	getAccessToken(): string | null;
 	refresh(): Promise<boolean>;
 	getUser(): { email: string; nickname: string } | null;
-	signup(email: string, password: string, nickname: string): Promise<boolean>;
 }
 
 export default AuthProvider;

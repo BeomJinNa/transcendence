@@ -1,6 +1,5 @@
 import MainPage from "../pages/MainPage";
 import LoginPage from "../pages/LoginPage";
-import SignupPage from "../pages/SignupPage";
 import GamePage from "../pages/GamePage";
 import AuthService from "../auth/AuthService";
 import I18n from "../localization/I18n";
@@ -38,10 +37,6 @@ class Router {
 			},
 			"/login": {
 				handler: this.loadPage(LoginPage),
-				restrictedIfAuthenticated: true, // 로그인 상태에서 접근 제한
-			},
-			"/signup": {
-				handler: this.loadPage(SignupPage),
 				restrictedIfAuthenticated: true, // 로그인 상태에서 접근 제한
 			},
 			"/game": {
