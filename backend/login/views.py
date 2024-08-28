@@ -8,11 +8,61 @@ from .serializers import UserSerializer
 from main.customEmail import send_custom_email
 import os
 import logging
+import requests
 logger = logging.getLogger('mylogger')
 
 User = get_user_model()
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+def send2FAcode(user, baseurl):
+    tempToken = str(RefreshToken.for_user(user))
+    link = f"{baseurl}/login?t={tempToken}"
+    logger.info(f"2FA code link: {link}")
+    send_custom_email(
+        '인증링크',
+        f'<a href={link}>주소를</a> 클릭해주세요',
+        'from server',
+        [user.email],
+        smtp_user=EMAIL_HOST_USER,          # SMTP 사용자 이메일
+        smtp_password=EMAIL_HOST_PASSWORD   # SMTP 비밀번호
+    )
+
+# Oauth2.0 code grant flow
+class Oauth2LoginView(APIView):
+    def post(self, request):
+        # 프론트엔드에서 전송된 인증 코드
+        auth_code = request.data.get("code")
+        baseurl = request.data.get("baseurl")
+        if not auth_code:
+            return Response({"error": "Authorization code not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        logger.info(f"auth_code: {auth_code}")
+
+        # 42 oauth에 요청하여 access token 획득
+        token_url = 'https://api.intra.42.fr/oauth/token'
+        client_id = os.getenv('OAUTH_42_CLIENT_ID')
+        client_secret = os.getenv('OAUTH_42_CLIENT_SECRET')
+        tokenResponse = requests.post(token_url, data={
+            'grant_type': 'authorization_code',
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'code': auth_code,
+            'redirect_uri': 'http://localhost/login'
+        }).json()
+
+        # 사용자를 식별하고 생성 또는 업데이트
+        user_info = requests.get('https://api.intra.42.fr/v2/me', headers={'Authorization': f'Bearer {tokenResponse["access_token"]}'})
+        user_info = user_info.json()
+        username = user_info['login']
+        email = user_info['email']
+        user, created = User.objects.get_or_create(username=username, email=email)
+        if created:
+            user.save()
+
+        # 2FA 코드 전송
+        send2FAcode(user=user, baseurl=baseurl)
+        return Response(status=status.HTTP_200_OK)
 
 # JWT 로그인 + 2FA 코드 발송
 class LoginView(APIView):
@@ -25,18 +75,7 @@ class LoginView(APIView):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            tempToken = str(RefreshToken.for_user(user))
-            link = f"{baseurl}/login?t={tempToken}"
-            logger.info(f"2FA code link: {link}")
-
-            send_custom_email(
-                '인증링크',
-                f'<a href={link}>주소를</a> 클릭해주세요',
-                'from server',
-                [user.email],
-                smtp_user=EMAIL_HOST_USER,          # SMTP 사용자 이메일
-                smtp_password=EMAIL_HOST_PASSWORD   # SMTP 비밀번호
-            )
+            send2FAcode(user=user, baseurl=baseurl)
             return Response({'detail': "2FA 코드가 이메일로 전송됨"}, status=status.HTTP_200_OK)
         return Response({'detail': "사용자 인증 실패"}, status=status.HTTP_400_BAD_REQUEST)
 
