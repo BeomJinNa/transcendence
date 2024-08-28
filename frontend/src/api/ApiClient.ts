@@ -80,5 +80,5 @@ class ApiClient {
     return this.request("DELETE", url);
   }
 }
-export const apiClient = new ApiClient("http://localhost:8000/api");
+export const apiClient = new ApiClient("https://localhost/api");
 export default ApiClient;

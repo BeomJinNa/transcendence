@@ -33,7 +33,9 @@ class Oauth2LoginView(APIView):
     def post(self, request):
         # 프론트엔드에서 전송된 인증 코드
         auth_code = request.data.get("code")
+        logger.info(f"auth_code: {auth_code}")
         baseurl = request.data.get("baseurl")
+        logger.info(f"baseurl: {baseurl}")
         if not auth_code:
             return Response({"error": "Authorization code not provided"}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -48,12 +50,17 @@ class Oauth2LoginView(APIView):
             'client_id': client_id,
             'client_secret': client_secret,
             'code': auth_code,
-            'redirect_uri': 'http://localhost/login'
-        }).json()
+            'redirect_uri': baseurl + '/login'
+        })
+        logger.info(f"tokenResponse: {tokenResponse}")
+        tokenResponse = tokenResponse.json()
+        logger.info(f"tokenResponse: {tokenResponse}")
 
         # 사용자를 식별하고 생성 또는 업데이트
         user_info = requests.get('https://api.intra.42.fr/v2/me', headers={'Authorization': f'Bearer {tokenResponse["access_token"]}'})
+        logger.info(f"user_info: {user_info}")
         user_info = user_info.json()
+        logger.info(f"user_info: {user_info}")
         username = user_info['login']
         email = user_info['email']
         user, created = User.objects.get_or_create(username=username, email=email)
