@@ -5,8 +5,8 @@ import GamePage from "../pages/GamePage";
 import AuthService from "../auth/AuthService";
 import I18n from "../localization/I18n";
 
-type PageComponentType = { new (): any };
-type RouteHandlerType = () => HTMLElement;
+type PageComponentType = { new (): any; cleanup?: () => void };
+type RouteHandlerType = () => { component: HTMLElement; pageInstance: any };
 
 type RoutesType = Record<
 	string,
@@ -20,6 +20,7 @@ type RoutesType = Record<
 class Router {
 	private routes: RoutesType;
 	private app: HTMLElement;
+	private currentPageInstance: any = null;
 	private pathToRedirect: string = "/login";
 	private authService: AuthService;
 	private static instance: Router | null = null;
@@ -76,6 +77,10 @@ class Router {
 		this.render(path);
 	}
 
+	public setCurrentPageInstance(pageInstance: any) {
+		this.currentPageInstance = pageInstance;
+	}
+
 	private render(path: string) {
 		const route = this.routes[path] || this.routes["/"];
 
@@ -90,7 +95,13 @@ class Router {
 			return;
 		}
 
-		const component = route.handler();
+		if (this.currentPageInstance && this.currentPageInstance.cleanup) {
+			this.currentPageInstance.cleanup();
+		}
+
+		const { component, pageInstance } = route.handler();
+
+		this.currentPageInstance = pageInstance;
 
 		this.app.innerHTML = "";
 		this.app.appendChild(component);
@@ -98,8 +109,8 @@ class Router {
 
 	private loadPage(PageComponent: PageComponentType): RouteHandlerType {
 		return () => {
-			const page = new PageComponent();
-			return page.render();
+			const pageInstance = new PageComponent();
+			return { component: pageInstance.render(), pageInstance };
 		};
 	}
 }

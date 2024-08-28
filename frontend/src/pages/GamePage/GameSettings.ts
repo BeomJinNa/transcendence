@@ -1,6 +1,7 @@
 import I18n from "../../localization/I18n";
 import { createLabel, createSelect, createButton } from "../formUtils";
 import Router from "../../routes/Router";
+import GamePage from "../GamePage";
 
 export default class GameSettings {
 	public render(): HTMLElement {
@@ -31,7 +32,6 @@ export default class GameSettings {
 			{ value: "4", text: "4 Players" },
 		]);
 		playerCountSelect.classList.add("form-select", "mb-3", "w-50");
-
 		form.appendChild(playerCountSelect);
 		numberOfPlayersSelectorWrapper.appendChild(playerCountSelect);
 		form.appendChild(numberOfPlayersSelectorWrapper);
@@ -53,6 +53,12 @@ export default class GameSettings {
 
 	private startGame(playerCount: number): void {
 		sessionStorage.setItem("playerCount", playerCount.toString());
-		Router.getInstance().navigateTo("/game");
+		const gamePage = new GamePage();
+		const gameContainer = document.getElementById("app");
+		if (gameContainer) {
+			gameContainer.innerHTML = "";
+			Router.getInstance().setCurrentPageInstance(gamePage);
+			gameContainer.appendChild(gamePage.render());
+		}
 	}
 }

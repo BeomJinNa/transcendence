@@ -114,4 +114,8 @@ export default class GamePage {
 
 		sessionStorage.removeItem("playerCount");
 	}
+
+	public cleanup(): void {
+		this.endGame();
+	}
 }
