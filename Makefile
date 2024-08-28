@@ -12,61 +12,40 @@ certs: frontend/certs
 frontend/certs:
 	mkdir frontend/certs
 
-re-prod:
-	make clean-prod; make prod
+re:
+	make clean; make
 
-re-prod-front:
-	docker compose -f docker-compose.prod.yml down --remove-orphans frontend
-	docker compose -f docker-compose.prod.yml up -d --build frontend
+re-front:
+	docker compose -f docker-compose.yml down --remove-orphans frontend
+	docker compose -f docker-compose.yml up -d --build frontend
 
-re-dev:
-	make clean-dev; make dev
+up:
+	docker compose -f docker-compose.yml up -d
 
-up-dev:
-	docker compose -f docker-compose.dev.yml up -d
+down:
+	docker compose -f docker-compose.yml down --remove-orphans
 
-up-prod:
-	docker compose -f docker-compose.prod.yml up -d
 
-down-dev:
-	docker compose -f docker-compose.dev.yml down --remove-orphans
+build:
+	docker compose -f docker-compose.yml build
 
-down-prod:
-	docker compose -f docker-compose.prod.yml down --remove-orphans
-
-build-dev:
-	docker compose -f docker-compose.dev.yml build
-
-build-prod:
-	docker compose -f docker-compose.prod.yml build
-
-dev:
-	docker compose -f docker-compose.dev.yml up -d --build
 
 prod:
-	docker compose -f docker-compose.prod.yml up -d --build
+	docker compose -f docker-compose.yml up -d --build
 
-clean-dev:
-	docker compose -f docker-compose.dev.yml down --remove-orphans
-	docker volume rm $(docker volume ls -qf dangling=true)
-	docker rmi $(docker images -f "dangling=true" -q)
 
-clean-prod:
-	docker compose -f docker-compose.prod.yml down --remove-orphans
+clean:
+	docker compose -f docker-compose.yml down --remove-orphans
 	docker volume rm $(docker volume ls -qf dangling=true)
 	docker rmi $(docker images -f "dangling=true" -q)
 
 clean-certs:
 	rm -f $(LOCAL_SSL_CERT_KEY_PATH) $(LOCAL_SSL_CERT_PATH)
 
-restart-dev:
-	docker compose -f docker-compose.dev.yml restart
 
-restart-prod:
-	docker compose -f docker-compose.prod.yml restart
+restart:
+	docker compose -f docker-compose.yml restart
 
-logs-dev:
-	docker compose -f docker-compose.dev.yml logs
 
-logs-prod:
-	docker compose -f docker-compose.prod.yml logs
+logs:
+	docker compose -f docker-compose.yml logs
