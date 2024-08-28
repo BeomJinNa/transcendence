@@ -11,8 +11,7 @@ async function requestLogin(code: string) {
     baseurl: window.location.origin,
   });
   if (result.status === 200) {
-    alert(I18n.t("loginSuccess"));
-    Router.getInstance().navigateTo("/");
+    alert(I18n.t("checkEmail"));
   } else {
     alert(I18n.t("loginFailed"));
   }
@@ -33,7 +32,8 @@ export default class LoginPage {
       "flex-column",
       "justify-content-center",
       "min-vh-100",
-      "text-center"
+      "text-center",
+      "align-items-center"
     );
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("t");
@@ -72,7 +72,7 @@ export default class LoginPage {
     container.appendChild(heading);
 
     const socialLoginButton = document.createElement("div");
-    socialLoginButton.textContent = I18n.t("42");
+    socialLoginButton.textContent = '42 ' + I18n.t("login");
     socialLoginButton.addEventListener("click", () => {
       this.openOauth2Popup();
     });
