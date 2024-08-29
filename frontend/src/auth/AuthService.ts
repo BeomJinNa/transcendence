@@ -37,7 +37,7 @@ export default class AuthService {
 		return this.provider.refresh();
 	}
 
-	getUser(): { email: string; nickname: string } | null {
+	getUser(): Promise<{ email: string; nickname: string } | null> {
 		return this.provider.getUser();
 	}
 }

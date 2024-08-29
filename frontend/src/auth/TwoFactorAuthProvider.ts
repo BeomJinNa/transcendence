@@ -7,6 +7,7 @@ export default class TwoFactorAuthProvider implements AuthProvider {
     try {
       result = await apiClient.post("/verify/", { token: login_token });
     } catch (e) {
+      this.logout();
       return false;
     }
     const responseBody = await result.json();
@@ -31,9 +32,11 @@ export default class TwoFactorAuthProvider implements AuthProvider {
         refresh_token: localStorage.getItem("refresh_token"),
       });
     } catch (e) {
+      this.logout();
       return false;
     }
     if (!result.ok) {
+      this.logout();
       return false;
     }
     const responseBody = await result.json();
@@ -41,7 +44,22 @@ export default class TwoFactorAuthProvider implements AuthProvider {
     localStorage.setItem("refresh_token", responseBody.refresh);
     return true;
   }
-  getUser(): { email: string; nickname: string } | null {
-    throw new Error("Method not implemented.");
+  async getUser(): Promise<{ email: string; nickname: string } | null> {
+    let result;
+    try {
+      result = await apiClient.get("/me/");
+    } catch (e) {
+      this.logout();
+      return null;
+    }
+    if (!result.ok) {
+      this.logout();
+      return null;
+    }
+    const responseBody = await result.json();
+    return {
+      email: responseBody.email,
+      nickname: responseBody.username,
+    };
   }
 }

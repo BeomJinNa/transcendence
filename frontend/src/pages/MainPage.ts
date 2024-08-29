@@ -44,6 +44,18 @@ export default class MainPage {
 			loginLink.classList.add("btn", "btn-primary");
 			buttonGroup.appendChild(loginLink);
 		} else {
+			const userInfo = document.createElement("div");
+			userInfo.textContent = I18n.t("welcome");
+			(async () => {
+				// 사용자 정보를 가져와서 화면에 표시
+				const user = await AuthService.getInstance().getUser();
+				if (user === null) {
+					Router.getInstance().navigateTo("/login");
+					return;
+				}
+				userInfo.textContent = I18n.t("welcome") + " " + user.nickname;
+			})();
+			container.appendChild(userInfo);
 			const gameLink = createLink("/game", I18n.t("game"));
 			gameLink.classList.add("btn", "btn-success");
 			buttonGroup.appendChild(gameLink);

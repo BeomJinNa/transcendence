@@ -5,21 +5,26 @@ class ApiClient {
   private baseUrl: string;
   private maxRetries: number = 3;
   private authService: AuthService | null = null;
+  private retryCount: number = 0;
 
   constructor(baseUrl: string = API_BASE_URL) {
     this.baseUrl = baseUrl;
   }
 
-	public setAuthService(authService: AuthService) {
-		this.authService = authService;
-	}
+  public setAuthService(authService: AuthService) {
+    this.authService = authService;
+  }
 
   private async request(
     method: string,
     url: string,
-    data?: object,
-    retryCount: number = 0
+    data?: object
   ): Promise<any> {
+    if (this.retryCount >= this.maxRetries) {
+      throw new Error(
+        "No refresh token available or maximum retry attempts reached."
+      );
+    }
     const headers: HeadersInit = {
       "Content-Type": "application/json",
     };
@@ -42,14 +47,10 @@ class ApiClient {
 
     // 401 Unauthorized 처리
     if (response.status === 401) {
-      if (retryCount < this.maxRetries) {
-        throw new Error(
-          "No refresh token available or maximum retry attempts reached."
-        );
+      this.retryCount++;
+      if (this.authService === null) {
+        throw new Error("AuthService is not set.");
       }
-			if (this.authService === null) {
-				throw new Error("AuthService is not set.");
-			}
       const result = await this.authService.refresh();
       if (!result) {
         throw new Error("Token refresh failed after multiple attempts.");
@@ -58,8 +59,9 @@ class ApiClient {
       headers["Authorization"] = `Bearer ${this.authService.getAccessToken()}`;
 
       // 원래 요청 다시 시도
-      return await this.request(method, url, data, retryCount + 1);
+      return await this.request(method, url, data);
     }
+    this.retryCount = 0;
 
     return response;
   }

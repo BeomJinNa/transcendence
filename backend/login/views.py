@@ -96,7 +96,8 @@ class Verify2FAcode(APIView):
 
 # 토큰 갱신
 class RefreshView(APIView):
-    permission_classes = [AllowAny]
+    authentication_classes = []
+    permission_classes = []
 
     def post(self, request):
         refresh_token = request.data.get('refresh_token')
@@ -125,6 +126,6 @@ class MyselfView(APIView):
     def get(self, request):
         user = request.user
         if (user.is_authenticated):
-            return Response({ username: user.get_username() }, status=status.HTTP_200_OK)
+            return Response({ 'username': user.username, 'email': user.email }, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)

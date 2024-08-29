@@ -4,7 +4,7 @@ interface AuthProvider {
 	isAuthenticated(): boolean;
 	getAccessToken(): string | null;
 	refresh(): Promise<boolean>;
-	getUser(): { email: string; nickname: string } | null;
+	getUser(): Promise<{ email: string; nickname: string } | null>;
 }
 
 export default AuthProvider;
