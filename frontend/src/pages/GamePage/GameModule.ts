@@ -640,4 +640,29 @@ export default class GameModule {
 	public getElement(): HTMLElement {
 		return this.renderer.domElement;
 	}
+
+	public dispose(): void {
+		this.stopAnimation();
+
+		this.removeEventListeners();
+
+		this.scene.traverse((object) => {
+			if (object instanceof THREE.Mesh) {
+				object.geometry.dispose();
+				if (object.material instanceof THREE.Material) {
+					object.material.dispose();
+				} else if (Array.isArray(object.material)) {
+					object.material.forEach((material) => material.dispose());
+				}
+			}
+		});
+
+		this.renderer.dispose();
+
+		if (this.renderer.domElement.parentElement) {
+			this.renderer.domElement.parentElement.removeChild(
+				this.renderer.domElement
+			);
+		}
+	}
 }

@@ -164,8 +164,7 @@ export default class GamePage {
 
 	private endGame(): void {
 		if (this.gameModule) {
-			this.gameModule.stopAnimation();
-			this.gameModule.removeEventListeners();
+			this.gameModule.dispose();
 			this.gameModule = null;
 		}
 
