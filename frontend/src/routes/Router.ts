@@ -51,13 +51,6 @@ class Router {
 		window.addEventListener("popstate", () => {
 			this.render(window.location.pathname);
 		});
-		document.addEventListener("click", (event) => {
-			if (event.target instanceof HTMLAnchorElement) {
-				event.preventDefault();
-				const path = new URL(event.target.href).pathname;
-				this.navigateTo(path);
-			}
-		});
 	}
 
 	public static getInstance(): Router {
@@ -76,19 +69,23 @@ class Router {
 		this.currentPageInstance = pageInstance;
 	}
 
+	public getCurrentPageInstance() {
+		return this.currentPageInstance;
+	}
+
 	private render(path: string) {
 		const route = this.routes[path] || this.routes["/"];
 
-		if (route.restricted && !this.authService.isAuthenticated()) {
-			alert(I18n.t("youMustBeLoggedIn"));
-			this.navigateTo(this.pathToRedirect);
-			return;
-		}
+		// if (route.restricted && !this.authService.isAuthenticated()) {
+		// 	alert(I18n.t("youMustBeLoggedIn"));
+		// 	this.navigateTo(this.pathToRedirect);
+		// 	return;
+		// }
 
-		if (route.restrictedIfAuthenticated && this.authService.isAuthenticated()) {
-			this.navigateTo("/");
-			return;
-		}
+		// if (route.restrictedIfAuthenticated && this.authService.isAuthenticated()) {
+		// 	this.navigateTo("/");
+		// 	return;
+		// }
 
 		if (this.currentPageInstance && this.currentPageInstance.cleanup) {
 			this.currentPageInstance.cleanup();

@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function init() {
 	await I18n.loadTranslations();
 	apiClient.setAuthService(AuthService.getInstance());
+	sessionStorage.clear();
 
 	const app = document.getElementById("app");
 	if (app) {

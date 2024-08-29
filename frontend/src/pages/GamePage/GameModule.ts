@@ -1,5 +1,7 @@
 import * as THREE from "three";
 import { Player } from "./Player";
+import TournamentState from "./TournamentState";
+import { Team } from "./TournamentState";
 
 export default class GameModule {
 	private readonly CAMERA_FOV = 70;
@@ -16,16 +18,11 @@ export default class GameModule {
 	private readonly PADDLE_DIMENSIONS = { width: 0.1, height: 0.4, depth: 1.5 };
 	private readonly PADDLE_OPACITY = 0.6;
 	private readonly PADDLE_X_OFFSET = 5;
+	private readonly PADDLE_X_POSITION =
+		this.CAMERA_B_POSITION.x - this.PADDLE_X_OFFSET;
 	private readonly PADDLE_Y_POSITION = -1;
 	private readonly PADDLE_Z_OFFSET = 2;
 	private readonly PADDLE_MOVE_DISTANCE = 0.78;
-	private readonly PADDLE_COLORS = [
-		[0x0000ff, 0x6666ff], // 팀 A
-		[0xff0000, 0xff6666], // 팀 B
-	];
-	private readonly PADDLE_X_POSITION =
-		this.CAMERA_B_POSITION.x - this.PADDLE_X_OFFSET;
-
 	private readonly BALL_COLOR = 0xff00ff;
 	private readonly BALL_RADIUS = 0.08;
 	private readonly BALL_SEGMENTS = 32;
@@ -51,15 +48,26 @@ export default class GameModule {
 	private ball: THREE.Mesh | undefined;
 	private ballVelocity: THREE.Vector3;
 	private controlKeys: ReturnType<typeof Player.getControlKeys>;
+	private teams: Team[];
+	private scoreA: number = 0;
+	private scoreB: number = 0;
+	private scoreLimit: number;
+	private onGameEnd: (winner: Team) => void;
+	private keyState: { [key: string]: boolean } = {};
 	private playerCount: number;
 	private scoreCallback: ((scoreA: number, scoreB: number) => void) | null =
 		null;
-	private scoreA = 0;
-	private scoreB = 0;
-	private keyState: { [key: string]: boolean } = {};
 
-	constructor(playerCount: number) {
+	constructor(
+		playerCount: number,
+		teams: Team[],
+		scoreLimit: number,
+		onGameEnd: (winner: Team) => void
+	) {
 		this.playerCount = playerCount;
+		this.teams = teams;
+		this.scoreLimit = scoreLimit;
+		this.onGameEnd = onGameEnd;
 		this.controlKeys = Player.getControlKeys();
 
 		this.scene = new THREE.Scene();
@@ -312,7 +320,10 @@ export default class GameModule {
 		for (let i = 0; i < this.playerCount; i++) {
 			const teamIndex = i < this.playerCount / 2 ? 0 : 1;
 			const paddleMaterial = new THREE.MeshStandardMaterial({
-				color: this.PADDLE_COLORS[teamIndex][i % 2],
+				color:
+					i % 2 === 0
+						? this.teams[teamIndex].color1
+						: this.teams[teamIndex].color2,
 				opacity: this.PADDLE_OPACITY,
 				transparent: true,
 			});
@@ -386,7 +397,6 @@ export default class GameModule {
 		if (this.animationFrameId) {
 			cancelAnimationFrame(this.animationFrameId);
 			this.animationFrameId = null;
-			console.log("Animation loop stopped.");
 		}
 	}
 
@@ -478,17 +488,6 @@ export default class GameModule {
 			if (Math.abs(this.ball.position.z) > this.TABLE_DIMENSIONS.depth / 2) {
 				this.ballVelocity.z *= -1;
 			}
-
-			if (
-				Math.abs(this.ball.position.z) > this.PLAY_AREA.depth / 2 ||
-				Math.abs(this.ball.position.x) > this.PLAY_AREA.width / 2
-			) {
-				if (this.ball.position.x > this.PLAY_AREA.width / 2) {
-					this.updateScore("A");
-				} else if (this.ball.position.x < -this.PLAY_AREA.width / 2) {
-					this.updateScore("B");
-				}
-			}
 		}
 	}
 
@@ -529,21 +528,27 @@ export default class GameModule {
 			const boundaryX = this.PLAY_AREA.width / 2;
 
 			if (ballPositionX > boundaryX) {
-				this.updateScore("A");
+				this.updateScore(1);
 			} else if (ballPositionX < -boundaryX) {
-				this.updateScore("B");
+				this.updateScore(0);
 			}
 		}
 	}
 
-	private updateScore(team: "A" | "B"): void {
-		if (team === "A") {
-			this.scoreA++;
+	private updateScore(teamIndex: number): void {
+		if (teamIndex === 0) {
+			this.scoreA += 1;
 		} else {
-			this.scoreB++;
+			this.scoreB += 1;
 		}
 
-		if (this.scoreCallback) {
+		if (
+			(teamIndex === 0 && this.scoreA >= this.scoreLimit) ||
+			(teamIndex === 1 && this.scoreB >= this.scoreLimit)
+		) {
+			const winner = this.teams[teamIndex];
+			this.onGameEnd(winner);
+		} else if (this.scoreCallback) {
 			this.scoreCallback(this.scoreA, this.scoreB);
 		}
 	}
@@ -577,7 +582,6 @@ export default class GameModule {
 	}
 
 	private mapXToY(x: number): number {
-
 		// H 계산
 		const H =
 			this.PADDLE_Y_POSITION -
@@ -607,11 +611,14 @@ export default class GameModule {
 		let instructions = "";
 
 		for (let i = 0; i < this.playerCount; i++) {
-			const teamIndex = i < this.playerCount / 2 ? 0 : 1; // 팀 A 또는 B를 선택
+			const teamIndex = i < this.playerCount / 2 ? 0 : 1;
 			const playerKeys = this.controlKeys[i + 1];
-			const color = `#${this.PADDLE_COLORS[teamIndex][i % 2].toString(16).padStart(6, "0")}`;
+			const color =
+				i % 2 === 0
+					? `#${this.teams[teamIndex].color1.toString(16).padStart(6, "0")}`
+					: `#${this.teams[teamIndex].color2.toString(16).padStart(6, "0")}`;
 
-			instructions += `<span style="color:${color}">■</span> : [Left: ${playerKeys.moveLeft}, Right: ${playerKeys.moveRight}]<br>`;
+			instructions += `<span style="color:${color}">■</span> ${this.teams[teamIndex].name} [Left: ${playerKeys.moveLeft}, Right: ${playerKeys.moveRight}]<br>`;
 		}
 
 		return instructions;

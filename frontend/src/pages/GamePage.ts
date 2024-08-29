@@ -1,16 +1,39 @@
 import GameSettings from "./GamePage/GameSettings";
 import GameModule from "./GamePage/GameModule";
+import GameResult from "./GamePage/GameResult";
 import I18n from "../localization/I18n";
 import { createButton } from "./formUtils";
 import Router from "../routes/Router";
+import TournamentState from "./GamePage/TournamentState";
 
 export default class GamePage {
 	private gameModule: GameModule | null = null;
 	private scoreDisplay: HTMLElement | null = null;
+	private currentStage: "settings" | "game" | "result" = "settings";
+
+	constructor() {
+		this.loadCurrentStage();
+	}
+
+	private loadCurrentStage(): void {
+		const savedStage = sessionStorage.getItem("currentStage");
+		if (savedStage) {
+			this.currentStage = savedStage as "settings" | "game" | "result";
+		} else {
+			this.currentStage = "settings";
+			sessionStorage.setItem("currentStage", this.currentStage);
+		}
+	}
 
 	public render(): HTMLElement {
-		const container = document.createElement("div");
+		this.loadCurrentStage();
 
+		const appContainer = document.getElementById("app");
+		if (appContainer) {
+			appContainer.innerHTML = "";
+		}
+
+		const container = document.createElement("div");
 		container.classList.add(
 			"container",
 			"mt-5",
@@ -21,23 +44,34 @@ export default class GamePage {
 			"text-center"
 		);
 
-		const playerCount = sessionStorage.getItem("playerCount");
-
-		if (!playerCount) {
-			const settings = new GameSettings();
-			container.appendChild(settings.render());
-			container.appendChild(this.createBackButton());
-		} else {
-			this.startGame(parseInt(playerCount, 10));
-			const gameArea = this.createGameArea();
-			container.appendChild(gameArea);
-
-			this.createGameUI(gameArea);
-
-			container.appendChild(this.createBackButton());
+		switch (this.currentStage) {
+			case "settings":
+				const settings = new GameSettings();
+				container.appendChild(settings.render());
+				break;
+			case "game":
+				this.startGame();
+				const gameArea = this.createGameArea();
+				container.appendChild(gameArea);
+				this.createGameUI(gameArea);
+				break;
+			case "result":
+				const resultPage = new GameResult();
+				container.appendChild(resultPage.render());
+				break;
 		}
 
+		container.appendChild(this.createBackButton());
 		return container;
+	}
+
+	public renderPage(): void {
+		const container = this.render();
+		const appContainer = document.getElementById("app");
+		if (appContainer) {
+			appContainer.innerHTML = "";
+			appContainer.appendChild(container);
+		}
 	}
 
 	private createGameArea(): HTMLElement {
@@ -83,8 +117,31 @@ export default class GamePage {
 		container.appendChild(gameUI);
 	}
 
-	private startGame(playerCount: number): void {
-		this.gameModule = new GameModule(playerCount);
+	private startGame(): void {
+		const tournamentState = TournamentState.getInstance();
+
+		const matchTeams = tournamentState.getCurrentMatchTeams();
+
+		if (!matchTeams) {
+			console.error("No teams available for the match.");
+			return;
+		}
+
+		this.gameModule = new GameModule(
+			tournamentState.playerCount,
+			[matchTeams.teamA, matchTeams.teamB],
+			tournamentState.scoreLimit,
+			(winner) => {
+				this.gameModule?.stopAnimation();
+				this.gameModule?.removeEventListeners();
+				this.gameModule = null;
+
+				tournamentState.completeMatch(winner);
+
+				sessionStorage.setItem("currentStage", "result");
+				this.renderPage();
+			}
+		);
 
 		this.gameModule.setScoreCallback((scoreA: number, scoreB: number) => {
 			if (this.scoreDisplay) {
@@ -112,7 +169,8 @@ export default class GamePage {
 			this.gameModule = null;
 		}
 
-		sessionStorage.removeItem("playerCount");
+		TournamentState.getInstance().reset();
+		sessionStorage.removeItem("currentStage");
 	}
 
 	public cleanup(): void {
