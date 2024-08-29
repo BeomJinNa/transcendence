@@ -49,7 +49,7 @@ export default class GameModule {
 	private ballVelocity: THREE.Vector3;
 	private controlKeys: ReturnType<typeof Player.getControlKeys>;
 	private teams: Team[];
-private scoreA: number = 0;
+	private scoreA: number = 0;
 	private scoreB: number = 0;
 	private scoreLimit: number;
 	private onGameEnd: (winner: Team) => void;
@@ -110,7 +110,6 @@ private scoreA: number = 0;
 	): void {
 		this.scoreCallback = callback;
 	}
-
 
 	private initGame(): void {
 		this.setupLighting();
@@ -311,7 +310,7 @@ private scoreA: number = 0;
 		this.scene.add(rightWall);
 	}
 
-private setupPlayers(): void {
+	private setupPlayers(): void {
 		const paddleGeometry = new THREE.BoxGeometry(
 			this.PADDLE_DIMENSIONS.width,
 			this.PADDLE_DIMENSIONS.height,
@@ -321,7 +320,10 @@ private setupPlayers(): void {
 		for (let i = 0; i < this.playerCount; i++) {
 			const teamIndex = i < this.playerCount / 2 ? 0 : 1;
 			const paddleMaterial = new THREE.MeshStandardMaterial({
-				color: i % 2 === 0 ? this.teams[teamIndex].color1 : this.teams[teamIndex].color2,
+				color:
+					i % 2 === 0
+						? this.teams[teamIndex].color1
+						: this.teams[teamIndex].color2,
 				opacity: this.PADDLE_OPACITY,
 				transparent: true,
 			});
@@ -520,7 +522,7 @@ private setupPlayers(): void {
 		}
 	}
 
-private handleGoalScoring(): void {
+	private handleGoalScoring(): void {
 		if (this.ball) {
 			const ballPositionX = this.ball.position.x;
 			const boundaryX = this.PLAY_AREA.width / 2;
@@ -533,7 +535,7 @@ private handleGoalScoring(): void {
 		}
 	}
 
-private updateScore(teamIndex: number): void {
+	private updateScore(teamIndex: number): void {
 		if (teamIndex === 0) {
 			this.scoreA += 1;
 		} else {
@@ -605,7 +607,7 @@ private updateScore(teamIndex: number): void {
 		return paddleY + y;
 	}
 
-public getControlInstructions(): string {
+	public getControlInstructions(): string {
 		let instructions = "";
 
 		for (let i = 0; i < this.playerCount; i++) {
@@ -613,12 +615,8 @@ public getControlInstructions(): string {
 			const playerKeys = this.controlKeys[i + 1];
 			const color =
 				i % 2 === 0
-					? `#${this.teams[teamIndex].color1
-							.toString(16)
-							.padStart(6, "0")}`
-					: `#${this.teams[teamIndex].color2
-							.toString(16)
-							.padStart(6, "0")}`;
+					? `#${this.teams[teamIndex].color1.toString(16).padStart(6, "0")}`
+					: `#${this.teams[teamIndex].color2.toString(16).padStart(6, "0")}`;
 
 			instructions += `<span style="color:${color}">■</span> ${this.teams[teamIndex].name} [Left: ${playerKeys.moveLeft}, Right: ${playerKeys.moveRight}]<br>`;
 		}

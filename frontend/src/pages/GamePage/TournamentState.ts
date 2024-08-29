@@ -6,11 +6,11 @@ export type Team = {
 };
 
 export default class TournamentState {
-	private rounds: Team[][]; // 각 라운드의 팀 배열
-	private currentRoundIndex: number; // 현재 라운드의 인덱스
-	private currentMatchIndex: number; // 현재 라운드에서 진행 중인 경기의 인덱스
+	public rounds: Team[][]; // 각 라운드의 팀 배열
 	public playerCount: number; // 플레이어 수
 	public scoreLimit: number; // 점수 제한
+	private currentRoundIndex: number; // 현재 라운드의 인덱스
+	private currentMatchIndex: number; // 현재 라운드에서 진행 중인 경기의 인덱스
 	private winner: Team | null; // 현재 토너먼트의 승자
 
 	private static instance: TournamentState | null = null;
@@ -21,7 +21,7 @@ export default class TournamentState {
 		this.currentMatchIndex = 0;
 		this.playerCount = 2;
 		this.scoreLimit = 10;
-		this.winner = null; // 초기 승자 설정
+		this.winner = null;
 	}
 
 	public static getInstance(): TournamentState {
@@ -47,7 +47,7 @@ export default class TournamentState {
 		this.currentMatchIndex = 0;
 		this.playerCount = playerCount;
 		this.scoreLimit = scoreLimit;
-		this.winner = null; // 초기화 시 승자를 null로 설정
+		this.winner = null;
 	}
 
 	public getCurrentMatchTeams(): { teamA: Team; teamB: Team } | null {

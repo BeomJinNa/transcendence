@@ -9,6 +9,15 @@ import Router from "../../routes/Router";
 import GamePage from "../GamePage";
 import TournamentState from "./TournamentState";
 
+function escapeHtml(unsafe: string): string {
+	return unsafe
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#039;");
+}
+
 export default class GameSettings {
 	public render(): HTMLElement {
 		const container = document.createElement("div");
@@ -21,7 +30,6 @@ export default class GameSettings {
 		const form = document.createElement("form");
 		form.classList.add("w-50", "mx-auto");
 
-		// 플레이어 수 선택
 		const numberOfPlayersLabel = createLabel(I18n.t("numberOfPlayers"));
 		numberOfPlayersLabel.classList.add("h5", "mb-3");
 		form.appendChild(numberOfPlayersLabel);
@@ -42,21 +50,28 @@ export default class GameSettings {
 		numberOfPlayersSelectorWrapper.appendChild(playerCountSelect);
 		form.appendChild(numberOfPlayersSelectorWrapper);
 
-		// 토너먼트 모드 선택
 		const tournamentModeLabel = createLabel(I18n.t("selectTournamentMode"));
 		tournamentModeLabel.classList.add("h5", "mb-3");
 		form.appendChild(tournamentModeLabel);
+
+		const tournamentModeSelectWrapper = document.createElement("div");
+		tournamentModeSelectWrapper.classList.add(
+			"d-flex",
+			"justify-content-center",
+			"mb-3"
+		);
 
 		const tournamentModeSelect = createSelect([
 			{ value: "2", text: "2강" },
 			{ value: "4", text: "4강" },
 			{ value: "8", text: "8강" },
 		]);
-		tournamentModeSelect.classList.add("form-select", "mb-3", "w-50");
-		form.appendChild(tournamentModeSelect);
+		tournamentModeSelect.classList.add("form-select", "w-50", "text-center");
+		tournamentModeSelectWrapper.appendChild(tournamentModeSelect);
+		form.appendChild(tournamentModeSelectWrapper);
 
-		// 팀 이름 입력
 		const teamNameInputsWrapper = document.createElement("div");
+		teamNameInputsWrapper.classList.add("justify-content-center");
 		form.appendChild(teamNameInputsWrapper);
 
 		const teamNameInputs: HTMLInputElement[] = [];
@@ -76,9 +91,8 @@ export default class GameSettings {
 			}
 		};
 		tournamentModeSelect.addEventListener("change", updateTeamNameInputs);
-		updateTeamNameInputs(); // 초기화 시 팀 이름 입력란을 먼저 생성
+		updateTeamNameInputs();
 
-		// 승점 설정
 		const scoreLimitLabel = createLabel(I18n.t("scoreLimit"));
 		scoreLimitLabel.classList.add("h5", "mb-3");
 		form.appendChild(scoreLimitLabel);
@@ -91,14 +105,17 @@ export default class GameSettings {
 		scoreLimitInput.classList.add("form-control", "mb-3", "w-50", "mx-auto");
 		form.appendChild(scoreLimitInput);
 
-		// 게임 시작 버튼
 		const startGameButton = createButton(I18n.t("startGame"), (event) => {
 			event.preventDefault();
 			const playerCount = parseInt(playerCountSelect.value, 10);
-			const tournamentMode = parseInt(tournamentModeSelect.value, 10) as 2 | 4 | 8;
+			const tournamentMode = parseInt(tournamentModeSelect.value, 10) as
+				| 2
+				| 4
+				| 8;
 			const scoreLimit = parseInt(scoreLimitInput.value, 10);
 			const teamNames = teamNameInputs.map(
-				(input) => input.value || `Team ${teamNameInputs.indexOf(input) + 1}`
+				(input) =>
+					escapeHtml(input.value) || `Team ${teamNameInputs.indexOf(input) + 1}`
 			);
 
 			this.startGame(playerCount, tournamentMode, scoreLimit, teamNames);
@@ -119,12 +136,13 @@ export default class GameSettings {
 		scoreLimit: number,
 		teamNames: string[]
 	): void {
-		// TournamentState 초기화
 		const tournamentState = TournamentState.getInstance();
-		tournamentState.initialize(tournamentMode, teamNames, playerCount, scoreLimit);
-
-		// 세션 스토리지에 상태를 저장할 필요가 있는 경우 아래 코드 사용
-		// tournamentState.saveState();
+		tournamentState.initialize(
+			tournamentMode,
+			teamNames,
+			playerCount,
+			scoreLimit
+		);
 
 		sessionStorage.setItem("currentStage", "game");
 		const gamePage = Router.getInstance().getCurrentPageInstance() as GamePage;
@@ -132,6 +150,4 @@ export default class GameSettings {
 			gamePage.renderPage();
 		}
 	}
-
-	// 색상 할당 로직은 TournamentState 내부에서 관리되므로 여기서는 필요하지 않음
 }

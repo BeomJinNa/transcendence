@@ -30,7 +30,7 @@ export default class GamePage {
 
 		const appContainer = document.getElementById("app");
 		if (appContainer) {
-			appContainer.innerHTML = ""; // 기존의 컨텐츠 초기화
+			appContainer.innerHTML = "";
 		}
 
 		const container = document.createElement("div");
@@ -120,7 +120,6 @@ export default class GamePage {
 	private startGame(): void {
 		const tournamentState = TournamentState.getInstance();
 
-		// 현재 라운드의 다음 경기를 위해 팀을 가져옴
 		const matchTeams = tournamentState.getCurrentMatchTeams();
 
 		if (!matchTeams) {
@@ -128,7 +127,6 @@ export default class GamePage {
 			return;
 		}
 
-		// GameModule 인스턴스를 초기화하고, 게임 종료 콜백을 정의
 		this.gameModule = new GameModule(
 			tournamentState.playerCount,
 			[matchTeams.teamA, matchTeams.teamB],
@@ -138,15 +136,9 @@ export default class GamePage {
 				this.gameModule?.removeEventListeners();
 				this.gameModule = null;
 
-				// 경기 결과 업데이트
 				tournamentState.completeMatch(winner);
 
-				// TODO: 경기 결과를 표시하기 위한 데이터를 TournamentState에 저장
-				// 예: tournamentState.setMatchResult(matchTeams, winner);
-				
-				// 다음 단계로 진행
 				sessionStorage.setItem("currentStage", "result");
-				
 				this.renderPage();
 			}
 		);
@@ -177,7 +169,6 @@ export default class GamePage {
 			this.gameModule = null;
 		}
 
-		// TournamentState 초기화 및 자원 회수 작업
 		TournamentState.getInstance().reset();
 		sessionStorage.removeItem("currentStage");
 	}
