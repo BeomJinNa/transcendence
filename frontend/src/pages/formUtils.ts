@@ -9,11 +9,22 @@ export function createLabel(text: string, htmlFor?: string): HTMLElement {
 	return label;
 }
 
-export function createInput(type: string, id?: string): HTMLInputElement {
+export function createInput(attributes: {
+	type: string;
+	id?: string;
+	placeholder?: string;
+	value?: string;
+}): HTMLInputElement {
 	const input = document.createElement("input");
-	input.type = type;
-	if (id) {
-		input.id = id;
+	input.type = attributes.type;
+	if (attributes.id) {
+		input.id = attributes.id;
+	}
+	if (attributes.placeholder) {
+		input.placeholder = attributes.placeholder;
+	}
+	if (attributes.value) {
+		input.value = attributes.value;
 	}
 	return input;
 }
@@ -51,17 +62,4 @@ export function createSelect(
 		select.appendChild(option);
 	});
 	return select;
-}
-
-export function createFormGroup(
-	labelText: string,
-	inputType: string,
-	inputId?: string
-): HTMLElement {
-	const group = document.createElement("div");
-	const label = createLabel(labelText, inputId);
-	const input = createInput(inputType, inputId);
-	group.appendChild(label);
-	group.appendChild(input);
-	return group;
 }

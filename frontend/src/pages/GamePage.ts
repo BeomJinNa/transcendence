@@ -1,16 +1,39 @@
 import GameSettings from "./GamePage/GameSettings";
 import GameModule from "./GamePage/GameModule";
+import GameResult from "./GamePage/GameResult";
 import I18n from "../localization/I18n";
 import { createButton } from "./formUtils";
 import Router from "../routes/Router";
+import TournamentState from "./GamePage/TournamentState";
 
 export default class GamePage {
 	private gameModule: GameModule | null = null;
 	private scoreDisplay: HTMLElement | null = null;
+	private currentStage: "settings" | "game" | "result" = "settings";
+
+	constructor() {
+		this.loadCurrentStage();
+	}
+
+	private loadCurrentStage(): void {
+		const savedStage = sessionStorage.getItem("currentStage");
+		if (savedStage) {
+			this.currentStage = savedStage as "settings" | "game" | "result";
+		} else {
+			this.currentStage = "settings";
+			sessionStorage.setItem("currentStage", this.currentStage);
+		}
+	}
 
 	public render(): HTMLElement {
-		const container = document.createElement("div");
+		this.loadCurrentStage();
 
+		const appContainer = document.getElementById("app");
+		if (appContainer) {
+			appContainer.innerHTML = ""; // 기존의 컨텐츠 초기화
+		}
+
+		const container = document.createElement("div");
 		container.classList.add(
 			"container",
 			"mt-5",
@@ -21,23 +44,34 @@ export default class GamePage {
 			"text-center"
 		);
 
-		const playerCount = sessionStorage.getItem("playerCount");
-
-		if (!playerCount) {
-			const settings = new GameSettings();
-			container.appendChild(settings.render());
-			container.appendChild(this.createBackButton());
-		} else {
-			this.startGame(parseInt(playerCount, 10));
-			const gameArea = this.createGameArea();
-			container.appendChild(gameArea);
-
-			this.createGameUI(gameArea);
-
-			container.appendChild(this.createBackButton());
+		switch (this.currentStage) {
+			case "settings":
+				const settings = new GameSettings();
+				container.appendChild(settings.render());
+				break;
+			case "game":
+				this.startGame();
+				const gameArea = this.createGameArea();
+				container.appendChild(gameArea);
+				this.createGameUI(gameArea);
+				break;
+			case "result":
+				const resultPage = new GameResult();
+				container.appendChild(resultPage.render());
+				break;
 		}
 
+		container.appendChild(this.createBackButton());
 		return container;
+	}
+
+	public renderPage(): void {
+		const container = this.render();
+		const appContainer = document.getElementById("app");
+		if (appContainer) {
+			appContainer.innerHTML = "";
+			appContainer.appendChild(container);
+		}
 	}
 
 	private createGameArea(): HTMLElement {
@@ -83,8 +117,39 @@ export default class GamePage {
 		container.appendChild(gameUI);
 	}
 
-	private startGame(playerCount: number): void {
-		this.gameModule = new GameModule(playerCount);
+	private startGame(): void {
+		const tournamentState = TournamentState.getInstance();
+
+		// 현재 라운드의 다음 경기를 위해 팀을 가져옴
+		const matchTeams = tournamentState.getCurrentMatchTeams();
+
+		if (!matchTeams) {
+			console.error("No teams available for the match.");
+			return;
+		}
+
+		// GameModule 인스턴스를 초기화하고, 게임 종료 콜백을 정의
+		this.gameModule = new GameModule(
+			tournamentState.playerCount,
+			[matchTeams.teamA, matchTeams.teamB],
+			tournamentState.scoreLimit,
+			(winner) => {
+				this.gameModule?.stopAnimation();
+				this.gameModule?.removeEventListeners();
+				this.gameModule = null;
+
+				// 경기 결과 업데이트
+				tournamentState.completeMatch(winner);
+
+				// TODO: 경기 결과를 표시하기 위한 데이터를 TournamentState에 저장
+				// 예: tournamentState.setMatchResult(matchTeams, winner);
+				
+				// 다음 단계로 진행
+				sessionStorage.setItem("currentStage", "result");
+				
+				this.renderPage();
+			}
+		);
 
 		this.gameModule.setScoreCallback((scoreA: number, scoreB: number) => {
 			if (this.scoreDisplay) {
@@ -112,7 +177,9 @@ export default class GamePage {
 			this.gameModule = null;
 		}
 
-		sessionStorage.removeItem("playerCount");
+		// TournamentState 초기화 및 자원 회수 작업
+		TournamentState.getInstance().reset();
+		sessionStorage.removeItem("currentStage");
 	}
 
 	public cleanup(): void {
