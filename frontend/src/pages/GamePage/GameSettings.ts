@@ -42,8 +42,8 @@ export default class GameSettings {
 		);
 
 		const playerCountSelect = createSelect([
-			{ value: "2", text: "1 vs 1" },
-			{ value: "4", text: "2 vs 2" },
+			{ value: "2", text: I18n.t("oneVsOne") },
+			{ value: "4", text: I18n.t("twoVsTwo") },
 		]);
 		playerCountSelect.classList.add("form-select", "mb-3", "w-50");
 		form.appendChild(playerCountSelect);
@@ -62,9 +62,9 @@ export default class GameSettings {
 		);
 
 		const tournamentModeSelect = createSelect([
-			{ value: "2", text: "2강" },
-			{ value: "4", text: "4강" },
-			{ value: "8", text: "8강" },
+			{ value: "2", text: I18n.t("tournamentModeTwo") },
+			{ value: "4", text: I18n.t("tournamentModeFour") },
+			{ value: "8", text: I18n.t("tournamentModeEight") },
 		]);
 		tournamentModeSelect.classList.add("form-select", "w-50", "text-center");
 		tournamentModeSelectWrapper.appendChild(tournamentModeSelect);

@@ -1,4 +1,5 @@
 {
+  "selectTournamentMode": "토너먼트 모드 선택",
 	"backToMainButton": "메인 페이지로 돌아가기",
 	"emailLabel": "이메일",
 	"game": "게임",
@@ -23,5 +24,20 @@
 	"signupPageTitle": "회원가입 페이지",
 	"signupSuccess": "회원가입 성공!",
 	"startGame": "게임 시작",
-	"youMustBeLoggedIn": "이 페이지에 접근하려면 로그인해야 합니다."
+	"youMustBeLoggedIn": "이 페이지에 접근하려면 로그인해야 합니다.",
+	"matchResult": "경기 결과",
+	"wonTheMatch": "이겼습니다!",
+	"isTheTournamentChampion": "토너먼트 챔피언입니다!",
+	"nextMatch": "다음 경기",
+	"startNextMatch": "다음 경기 시작",
+	"vs": "대",
+	"oneVsOne": "1 대 1",
+	"twoVsTwo": "2 대 2",
+	"tournamentModeTwo": "2강",
+	"tournamentModeFour": "4강",
+	"tournamentModeEight": "8강",
+	"teamName": "팀 이름",
+	"welcome": "환영합니다",
+	"checkEmail": "이메일을 확인해 주세요.",
+	"scoreLimit": "점수 제한"
 }
