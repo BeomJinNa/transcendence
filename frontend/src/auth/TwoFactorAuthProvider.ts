@@ -10,6 +10,10 @@ export default class TwoFactorAuthProvider implements AuthProvider {
       this.logout();
       return false;
     }
+    if (!result.ok) {
+      this.logout();
+      return false;
+    }
     const responseBody = await result.json();
     localStorage.setItem("access_token", responseBody.access);
     localStorage.setItem("refresh_token", responseBody.refresh);

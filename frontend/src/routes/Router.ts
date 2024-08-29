@@ -76,16 +76,16 @@ class Router {
 	private render(path: string) {
 		const route = this.routes[path] || this.routes["/"];
 
-		// if (route.restricted && !this.authService.isAuthenticated()) {
-		// 	alert(I18n.t("youMustBeLoggedIn"));
-		// 	this.navigateTo(this.pathToRedirect);
-		// 	return;
-		// }
+		if (route.restricted && !this.authService.isAuthenticated()) {
+			alert(I18n.t("youMustBeLoggedIn"));
+			this.navigateTo(this.pathToRedirect);
+			return;
+		}
 
-		// if (route.restrictedIfAuthenticated && this.authService.isAuthenticated()) {
-		// 	this.navigateTo("/");
-		// 	return;
-		// }
+		if (route.restrictedIfAuthenticated && this.authService.isAuthenticated()) {
+			this.navigateTo("/");
+			return;
+		}
 
 		if (this.currentPageInstance && this.currentPageInstance.cleanup) {
 			this.currentPageInstance.cleanup();
