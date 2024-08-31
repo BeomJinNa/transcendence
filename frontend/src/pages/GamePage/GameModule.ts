@@ -528,9 +528,9 @@ export default class GameModule {
 			const boundaryX = this.PLAY_AREA.width / 2;
 
 			if (ballPositionX > boundaryX) {
-				this.updateScore(1);
-			} else if (ballPositionX < -boundaryX) {
 				this.updateScore(0);
+			} else if (ballPositionX < -boundaryX) {
+				this.updateScore(1);
 			}
 		}
 	}

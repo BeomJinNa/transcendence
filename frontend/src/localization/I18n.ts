@@ -1,11 +1,28 @@
 type Translation = { [key: string]: string };
+
 class I18n {
 	private locale: string;
 	private translations: { [key: string]: Translation } = {};
+	private supportedLocales: string[] = [
+		"en", "ko", "ja", "zh", "es", "de", "fr", 
+		"ru", "it", "pt", "nl", "hi", "ar", 
+		"tr", "pl", "vi", "th", "sv"
+	];
 
-	constructor(defaultLocale: string) {
+	constructor() {
 		const savedLocale = localStorage.getItem("locale");
-		this.locale = savedLocale || defaultLocale;
+		this.locale = this.getBrowserLocale() || savedLocale || "en";
+	}
+
+	private getBrowserLocale(): string | null {
+		const browserLocale = navigator.language || navigator.languages[0];
+		const languageCode = browserLocale.split('-')[0];
+
+		if (this.supportedLocales.includes(languageCode)) {
+			return languageCode;
+		}
+
+		return null;
 	}
 
 	public async loadTranslations() {
@@ -30,4 +47,4 @@ class I18n {
 	}
 }
 
-export default new I18n("en");
+export default new I18n();
